@@ -29,125 +29,171 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CadastroForm));
-            this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.picPrevia = new System.Windows.Forms.PictureBox();
+            this.btnEscolherImagem = new System.Windows.Forms.Button();
+            this.lblNome = new System.Windows.Forms.Label();
+            this.txtNome = new System.Windows.Forms.TextBox();
+            this.lblQuantidade = new System.Windows.Forms.Label();
+            this.txtQuantidade = new System.Windows.Forms.TextBox();
+            this.lblTipo = new System.Windows.Forms.Label();
+            this.cmbTipo = new System.Windows.Forms.ComboBox();
+            this.lblValor = new System.Windows.Forms.Label();
+            this.txtValor = new System.Windows.Forms.TextBox();
+            this.lblValidade = new System.Windows.Forms.Label();
+            this.dtpValidade = new System.Windows.Forms.DateTimePicker();
+            this.btnCadastrar = new System.Windows.Forms.Button();
+            this.btnCancelar = new System.Windows.Forms.Button();
+            this.btnEstoque = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.picPrevia)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // lblTitulo
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(235, 29);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Cadastro de Frutas";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitulo.Location = new System.Drawing.Point(12, 9);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(235, 29);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "Cadastro de Frutas";
             // 
-            // button1
+            // picPrevia
             // 
-            this.button1.Location = new System.Drawing.Point(579, 436);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(222, 46);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Cadastrar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.picPrevia.BackColor = System.Drawing.SystemColors.Window;
+            this.picPrevia.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picPrevia.Location = new System.Drawing.Point(25, 66);
+            this.picPrevia.Name = "picPrevia";
+            this.picPrevia.Size = new System.Drawing.Size(500, 300);
+            this.picPrevia.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picPrevia.TabIndex = 1;
+            this.picPrevia.TabStop = false;
             // 
-            // button2
+            // btnEscolherImagem
             // 
-            this.button2.Location = new System.Drawing.Point(351, 436);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(222, 46);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Cancelar";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnEscolherImagem.Location = new System.Drawing.Point(25, 380);
+            this.btnEscolherImagem.Name = "btnEscolherImagem";
+            this.btnEscolherImagem.Size = new System.Drawing.Size(222, 40);
+            this.btnEscolherImagem.TabIndex = 2;
+            this.btnEscolherImagem.Text = "Escolher imagem";
+            this.btnEscolherImagem.UseVisualStyleBackColor = true;
+            this.btnEscolherImagem.Click += new System.EventHandler(this.btnEscolherImagem_Click);
             // 
-            // button3
+            // lblNome
             // 
-            this.button3.Location = new System.Drawing.Point(25, 436);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(222, 46);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Estoque";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.lblNome.AutoSize = true;
+            this.lblNome.Location = new System.Drawing.Point(575, 66);
+            this.lblNome.Name = "lblNome";
+            this.lblNome.Size = new System.Drawing.Size(51, 20);
+            this.lblNome.TabIndex = 3;
+            this.lblNome.Text = "Nome";
             // 
-            // label2
+            // txtNome
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(575, 76);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 20);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Quantidade";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.txtNome.Location = new System.Drawing.Point(579, 88);
+            this.txtNome.MaxLength = 60;
+            this.txtNome.Name = "txtNome";
+            this.txtNome.Size = new System.Drawing.Size(222, 26);
+            this.txtNome.TabIndex = 4;
             // 
-            // label3
+            // lblQuantidade
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(575, 149);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(39, 20);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Tipo";
+            this.lblQuantidade.AutoSize = true;
+            this.lblQuantidade.Location = new System.Drawing.Point(575, 134);
+            this.lblQuantidade.Name = "lblQuantidade";
+            this.lblQuantidade.Size = new System.Drawing.Size(92, 20);
+            this.lblQuantidade.TabIndex = 5;
+            this.lblQuantidade.Text = "Quantidade";
             // 
-            // label4
+            // txtQuantidade
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(575, 224);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(46, 20);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Valor";
+            this.txtQuantidade.Location = new System.Drawing.Point(579, 156);
+            this.txtQuantidade.MaxLength = 9;
+            this.txtQuantidade.Name = "txtQuantidade";
+            this.txtQuantidade.Size = new System.Drawing.Size(222, 26);
+            this.txtQuantidade.TabIndex = 6;
             // 
-            // label5
+            // lblTipo
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(575, 290);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(71, 20);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "Validade";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            this.lblTipo.AutoSize = true;
+            this.lblTipo.Location = new System.Drawing.Point(575, 202);
+            this.lblTipo.Name = "lblTipo";
+            this.lblTipo.Size = new System.Drawing.Size(39, 20);
+            this.lblTipo.TabIndex = 7;
+            this.lblTipo.Text = "Tipo";
             // 
-            // textBox1
+            // cmbTipo
             // 
-            this.textBox1.Location = new System.Drawing.Point(579, 99);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 26);
-            this.textBox1.TabIndex = 8;
+            this.cmbTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTipo.FormattingEnabled = true;
+            this.cmbTipo.Location = new System.Drawing.Point(579, 224);
+            this.cmbTipo.Name = "cmbTipo";
+            this.cmbTipo.Size = new System.Drawing.Size(222, 28);
+            this.cmbTipo.TabIndex = 8;
             // 
-            // textBox2
+            // lblValor
             // 
-            this.textBox2.Location = new System.Drawing.Point(579, 172);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 26);
-            this.textBox2.TabIndex = 9;
+            this.lblValor.AutoSize = true;
+            this.lblValor.Location = new System.Drawing.Point(575, 270);
+            this.lblValor.Name = "lblValor";
+            this.lblValor.Size = new System.Drawing.Size(46, 20);
+            this.lblValor.TabIndex = 9;
+            this.lblValor.Text = "Valor";
             // 
-            // textBox3
+            // txtValor
             // 
-            this.textBox3.Location = new System.Drawing.Point(579, 247);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 26);
-            this.textBox3.TabIndex = 10;
+            this.txtValor.Location = new System.Drawing.Point(579, 292);
+            this.txtValor.MaxLength = 12;
+            this.txtValor.Name = "txtValor";
+            this.txtValor.Size = new System.Drawing.Size(222, 26);
+            this.txtValor.TabIndex = 10;
             // 
-            // textBox4
+            // lblValidade
             // 
-            this.textBox4.Location = new System.Drawing.Point(579, 313);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 26);
-            this.textBox4.TabIndex = 11;
+            this.lblValidade.AutoSize = true;
+            this.lblValidade.Location = new System.Drawing.Point(575, 338);
+            this.lblValidade.Name = "lblValidade";
+            this.lblValidade.Size = new System.Drawing.Size(71, 20);
+            this.lblValidade.TabIndex = 11;
+            this.lblValidade.Text = "Validade";
+            // 
+            // dtpValidade
+            // 
+            this.dtpValidade.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpValidade.Location = new System.Drawing.Point(579, 360);
+            this.dtpValidade.Name = "dtpValidade";
+            this.dtpValidade.Size = new System.Drawing.Size(222, 26);
+            this.dtpValidade.TabIndex = 12;
+            // 
+            // btnCadastrar
+            // 
+            this.btnCadastrar.Location = new System.Drawing.Point(579, 436);
+            this.btnCadastrar.Name = "btnCadastrar";
+            this.btnCadastrar.Size = new System.Drawing.Size(222, 46);
+            this.btnCadastrar.TabIndex = 13;
+            this.btnCadastrar.Text = "Cadastrar";
+            this.btnCadastrar.UseVisualStyleBackColor = true;
+            this.btnCadastrar.Click += new System.EventHandler(this.btnCadastrar_Click);
+            // 
+            // btnCancelar
+            // 
+            this.btnCancelar.Location = new System.Drawing.Point(351, 436);
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Size = new System.Drawing.Size(222, 46);
+            this.btnCancelar.TabIndex = 14;
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.UseVisualStyleBackColor = true;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            // 
+            // btnEstoque
+            // 
+            this.btnEstoque.Location = new System.Drawing.Point(25, 436);
+            this.btnEstoque.Name = "btnEstoque";
+            this.btnEstoque.Size = new System.Drawing.Size(222, 46);
+            this.btnEstoque.TabIndex = 15;
+            this.btnEstoque.Text = "Estoque";
+            this.btnEstoque.UseVisualStyleBackColor = true;
+            this.btnEstoque.Click += new System.EventHandler(this.btnEstoque_Click);
             // 
             // CadastroForm
             // 
@@ -156,22 +202,27 @@
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.BackColor = System.Drawing.SystemColors.Info;
             this.ClientSize = new System.Drawing.Size(831, 503);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnEstoque);
+            this.Controls.Add(this.btnCancelar);
+            this.Controls.Add(this.btnCadastrar);
+            this.Controls.Add(this.dtpValidade);
+            this.Controls.Add(this.lblValidade);
+            this.Controls.Add(this.txtValor);
+            this.Controls.Add(this.lblValor);
+            this.Controls.Add(this.cmbTipo);
+            this.Controls.Add(this.lblTipo);
+            this.Controls.Add(this.txtQuantidade);
+            this.Controls.Add(this.lblQuantidade);
+            this.Controls.Add(this.txtNome);
+            this.Controls.Add(this.lblNome);
+            this.Controls.Add(this.btnEscolherImagem);
+            this.Controls.Add(this.picPrevia);
+            this.Controls.Add(this.lblTitulo);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CadastroForm";
             this.Text = "Fruteira";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.CadastroForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.picPrevia)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -179,18 +230,21 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.PictureBox picPrevia;
+        private System.Windows.Forms.Button btnEscolherImagem;
+        private System.Windows.Forms.Label lblNome;
+        private System.Windows.Forms.TextBox txtNome;
+        private System.Windows.Forms.Label lblQuantidade;
+        private System.Windows.Forms.TextBox txtQuantidade;
+        private System.Windows.Forms.Label lblTipo;
+        private System.Windows.Forms.ComboBox cmbTipo;
+        private System.Windows.Forms.Label lblValor;
+        private System.Windows.Forms.TextBox txtValor;
+        private System.Windows.Forms.Label lblValidade;
+        private System.Windows.Forms.DateTimePicker dtpValidade;
+        private System.Windows.Forms.Button btnCadastrar;
+        private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.Button btnEstoque;
     }
 }
-

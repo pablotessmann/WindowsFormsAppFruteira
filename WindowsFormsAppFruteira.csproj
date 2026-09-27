@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fruta.cs" />
+    <Compile Include="FrutaApi.cs" />
     <Compile Include="CadastroForm.cs">
       <SubType>Form</SubType>
     </Compile>

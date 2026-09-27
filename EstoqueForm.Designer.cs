@@ -3,14 +3,14 @@
     partial class EstoqueForm
     {
         /// <summary>
-        /// Required designer variable.
+        /// Variável de designer necessária.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Clean up any resources being used.
+        /// Limpar os recursos que estão sendo usados.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /// <param name="disposing">true se for necessário descartar os recursos gerenciados; caso contrário, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,112 +20,152 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Código gerado pelo Windows Form Designer
 
         /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
+        /// Método necessário para suporte ao Designer - não modifique 
+        /// o conteúdo deste método com o editor de código.
         /// </summary>
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EstoqueForm));
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox1.SuspendLayout();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.grpPesquisar = new System.Windows.Forms.GroupBox();
+            this.lblCategoria = new System.Windows.Forms.Label();
+            this.cmbCategoria = new System.Windows.Forms.ComboBox();
+            this.lblNome = new System.Windows.Forms.Label();
+            this.txtNome = new System.Windows.Forms.TextBox();
+            this.btnPesquisar = new System.Windows.Forms.Button();
+            this.lstEstoque = new System.Windows.Forms.ListView();
+            this.colFruta = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colQuantidade = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colValidade = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colValor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colTipo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnVoltar = new System.Windows.Forms.Button();
+            this.grpPesquisar.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // lblTitulo
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.button1.Location = new System.Drawing.Point(602, 386);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(177, 43);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Voltar";
-            this.button1.UseVisualStyleBackColor = false;
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitulo.Location = new System.Drawing.Point(12, 9);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(226, 29);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "Estoque de Frutas";
             // 
-            // label1
+            // grpPesquisar
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(226, 29);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Estoque de Frutas";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.grpPesquisar.Controls.Add(this.lblNome);
+            this.grpPesquisar.Controls.Add(this.lblCategoria);
+            this.grpPesquisar.Controls.Add(this.txtNome);
+            this.grpPesquisar.Controls.Add(this.cmbCategoria);
+            this.grpPesquisar.Location = new System.Drawing.Point(24, 54);
+            this.grpPesquisar.Name = "grpPesquisar";
+            this.grpPesquisar.Size = new System.Drawing.Size(484, 97);
+            this.grpPesquisar.TabIndex = 1;
+            this.grpPesquisar.TabStop = false;
+            this.grpPesquisar.Text = "Pesquisar";
             // 
-            // listView1
+            // lblCategoria
             // 
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(17, 157);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(762, 223);
-            this.listView1.TabIndex = 2;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.lblCategoria.AutoSize = true;
+            this.lblCategoria.Location = new System.Drawing.Point(6, 20);
+            this.lblCategoria.Name = "lblCategoria";
+            this.lblCategoria.Size = new System.Drawing.Size(78, 20);
+            this.lblCategoria.TabIndex = 0;
+            this.lblCategoria.Text = "Categoria";
             // 
-            // button2
+            // cmbCategoria
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button2.Location = new System.Drawing.Point(602, 93);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(177, 43);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Pesquisar";
-            this.button2.UseVisualStyleBackColor = false;
+            this.cmbCategoria.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCategoria.FormattingEnabled = true;
+            this.cmbCategoria.Location = new System.Drawing.Point(10, 43);
+            this.cmbCategoria.Name = "cmbCategoria";
+            this.cmbCategoria.Size = new System.Drawing.Size(203, 28);
+            this.cmbCategoria.TabIndex = 1;
             // 
-            // textBox1
+            // lblNome
             // 
-            this.textBox1.Location = new System.Drawing.Point(10, 43);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(203, 26);
-            this.textBox1.TabIndex = 4;
+            this.lblNome.AutoSize = true;
+            this.lblNome.Location = new System.Drawing.Point(252, 20);
+            this.lblNome.Name = "lblNome";
+            this.lblNome.Size = new System.Drawing.Size(51, 20);
+            this.lblNome.TabIndex = 2;
+            this.lblNome.Text = "Nome";
             // 
-            // textBox2
+            // txtNome
             // 
-            this.textBox2.Location = new System.Drawing.Point(256, 43);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(203, 26);
-            this.textBox2.TabIndex = 5;
+            this.txtNome.Location = new System.Drawing.Point(256, 43);
+            this.txtNome.MaxLength = 60;
+            this.txtNome.Name = "txtNome";
+            this.txtNome.Size = new System.Drawing.Size(203, 26);
+            this.txtNome.TabIndex = 3;
             // 
-            // label2
+            // btnPesquisar
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(78, 20);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Categoria";
+            this.btnPesquisar.Location = new System.Drawing.Point(602, 93);
+            this.btnPesquisar.Name = "btnPesquisar";
+            this.btnPesquisar.Size = new System.Drawing.Size(177, 43);
+            this.btnPesquisar.TabIndex = 2;
+            this.btnPesquisar.Text = "Pesquisar";
+            this.btnPesquisar.UseVisualStyleBackColor = true;
+            this.btnPesquisar.Click += new System.EventHandler(this.btnPesquisar_Click);
             // 
-            // label3
+            // lstEstoque
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(252, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(51, 20);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Nome";
+            this.lstEstoque.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colFruta,
+            this.colQuantidade,
+            this.colValidade,
+            this.colValor,
+            this.colTipo});
+            this.lstEstoque.FullRowSelect = true;
+            this.lstEstoque.GridLines = true;
+            this.lstEstoque.HideSelection = false;
+            this.lstEstoque.Location = new System.Drawing.Point(17, 157);
+            this.lstEstoque.Name = "lstEstoque";
+            this.lstEstoque.Size = new System.Drawing.Size(762, 223);
+            this.lstEstoque.TabIndex = 3;
+            this.lstEstoque.UseCompatibleStateImageBehavior = false;
+            this.lstEstoque.View = System.Windows.Forms.View.Details;
             // 
-            // groupBox1
+            // colFruta
             // 
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Location = new System.Drawing.Point(24, 54);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(484, 97);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Pesquisar";
+            this.colFruta.Text = "Fruta";
+            this.colFruta.Width = 220;
+            // 
+            // colQuantidade
+            // 
+            this.colQuantidade.Text = "Quantidade";
+            this.colQuantidade.Width = 110;
+            // 
+            // colValidade
+            // 
+            this.colValidade.Text = "Validade";
+            this.colValidade.Width = 120;
+            // 
+            // colValor
+            // 
+            this.colValor.Text = "Valor";
+            this.colValor.Width = 110;
+            // 
+            // colTipo
+            // 
+            this.colTipo.Text = "Tipo";
+            this.colTipo.Width = 180;
+            // 
+            // btnVoltar
+            // 
+            this.btnVoltar.Location = new System.Drawing.Point(602, 386);
+            this.btnVoltar.Name = "btnVoltar";
+            this.btnVoltar.Size = new System.Drawing.Size(177, 43);
+            this.btnVoltar.TabIndex = 4;
+            this.btnVoltar.Text = "Voltar";
+            this.btnVoltar.UseVisualStyleBackColor = true;
+            this.btnVoltar.Click += new System.EventHandler(this.btnVoltar_Click);
             // 
             // EstoqueForm
             // 
@@ -133,16 +173,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Info;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.listView1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnVoltar);
+            this.Controls.Add(this.lstEstoque);
+            this.Controls.Add(this.btnPesquisar);
+            this.Controls.Add(this.grpPesquisar);
+            this.Controls.Add(this.lblTitulo);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EstoqueForm";
             this.Text = "Estoque";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.Load += new System.EventHandler(this.EstoqueForm_Load);
+            this.grpPesquisar.ResumeLayout(false);
+            this.grpPesquisar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,14 +191,19 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.GroupBox grpPesquisar;
+        private System.Windows.Forms.Label lblCategoria;
+        private System.Windows.Forms.ComboBox cmbCategoria;
+        private System.Windows.Forms.Label lblNome;
+        private System.Windows.Forms.TextBox txtNome;
+        private System.Windows.Forms.Button btnPesquisar;
+        private System.Windows.Forms.ListView lstEstoque;
+        private System.Windows.Forms.ColumnHeader colFruta;
+        private System.Windows.Forms.ColumnHeader colQuantidade;
+        private System.Windows.Forms.ColumnHeader colValidade;
+        private System.Windows.Forms.ColumnHeader colValor;
+        private System.Windows.Forms.ColumnHeader colTipo;
+        private System.Windows.Forms.Button btnVoltar;
     }
 }
