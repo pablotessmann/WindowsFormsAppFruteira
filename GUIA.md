@@ -29,6 +29,7 @@ Abra a pasta do projeto. Os arquivos que importam são estes:
 |---|---|
 | `Program.cs` | O **ponto de partida** do programa. É a primeira coisa que roda. |
 | `Fruta.cs` | A **classe de modelo**: representa uma fruta. |
+| `Categoria.cs` | Outra classe de modelo: uma categoria, como a API devolve. |
 | `FrutaApi.cs` | As **chamadas para a API** (o servidor que guarda os dados). |
 | `CadastroForm.cs` | O **seu código** da tela de cadastro. |
 | `CadastroForm.Designer.cs` | O **desenho** da tela de cadastro (gerado pelo Visual Studio). |
@@ -157,10 +158,20 @@ public static readonly string[] Tipos =
   `Fruta.Tipos`, e não `minhaFruta.Tipos`.
 - `readonly` = ninguém pode trocar a lista depois que o programa inicia.
 
-Essa lista é a **fonte única da verdade**. A tela de Cadastro a usa para
-preencher o campo Tipo, e a tela de Estoque a usa para preencher o filtro
-Categoria. Assim é impossível cadastrar `"Citrica"` (sem acento) e depois
-pesquisar `"Cítrica"` (com acento) e não achar nada.
+Essa é a **lista reserva**. A lista de verdade vem da **API de categorias**
+(etapa 10); esta só entra em cena quando a API não responde, para as listas
+suspensas não ficarem vazias.
+
+As telas não leem `Fruta.Tipos` direto. As duas chamam o mesmo método:
+
+```csharp
+FrutaApi.ObterTipos()
+```
+
+Esse método é a **fonte única da verdade**. A tela de Cadastro o usa para
+preencher o campo Tipo, e a tela de Estoque o usa para preencher o filtro
+Categoria. Assim é impossível cadastrar `"Acida"` (sem acento) e depois
+pesquisar `"Ácida"` (com acento) e não achar nada.
 
 ---
 
@@ -244,7 +255,8 @@ ele já entrega um `DateTime` pronto.
 **Tipo usa `ComboBox`, não `TextBox`.**
 O Tipo é o campo que o filtro "Categoria" do Estoque pesquisa. Se fosse texto
 livre, um erro de digitação no cadastro faria a fruta nunca aparecer na
-pesquisa. Com a lista fechada, só existem os 5 valores de `Fruta.Tipos`.
+pesquisa. Com a lista fechada, só existem os valores que
+`FrutaApi.ObterTipos()` devolve.
 
 A propriedade que fecha a lista é esta:
 
@@ -262,10 +274,10 @@ qualquer coisa. Isso vai no evento `Load`:
 ```csharp
 private void CadastroForm_Load(object sender, EventArgs e)
 {
-    cmbTipo.Items.AddRange(Fruta.Tipos);     // preenche a lista suspensa
-    dtpValidade.MinDate = DateTime.Today;    // proíbe data no passado
+    cmbTipo.Items.AddRange(FrutaApi.ObterTipos());   // preenche a lista suspensa
+    dtpValidade.MinDate = DateTime.Today;            // proíbe data no passado
     dtpValidade.Value = DateTime.Today;
-    txtNome.Focus();                         // cursor já no primeiro campo
+    txtNome.Focus();                                 // cursor já no primeiro campo
 }
 ```
 
@@ -694,14 +706,14 @@ este método **não muda nada**.
 No `Load` da tela:
 
 ```csharp
-cmbCategoria.Items.Add(TodasAsCategorias);    // "(Todas)"
-cmbCategoria.Items.AddRange(Fruta.Tipos);     // os mesmos tipos do Cadastro
-cmbCategoria.SelectedIndex = 0;               // começa em "(Todas)"
+cmbCategoria.Items.Add(TodasAsCategorias);             // "(Todas)"
+cmbCategoria.Items.AddRange(FrutaApi.ObterTipos());    // os mesmos tipos do Cadastro
+cmbCategoria.SelectedIndex = 0;                        // começa em "(Todas)"
 ```
 
-Repare de novo: **`Fruta.Tipos`**, a mesma lista da tela de Cadastro. É isso que
-garante que o que foi cadastrado como `"Cítrica"` seja encontrado ao pesquisar
-`"Cítrica"`.
+Repare de novo: **`FrutaApi.ObterTipos()`**, o mesmo método da tela de Cadastro.
+É isso que garante que o que foi cadastrado como `"Ácida"` seja encontrado ao
+pesquisar `"Ácida"`.
 
 ### A opção "(Todas)"
 
@@ -732,14 +744,21 @@ e o compilador não avisaria nada.
 ## Etapa 10 — Onde a API entra
 
 Neste projeto, **os dados não ficam no programa**: quem guarda tudo é uma API
-(um servidor que responde pela internet). A API **ainda não existe**, então as
-chamadas estão **comentadas** no arquivo `FrutaApi.cs`.
+(um servidor que responde pela internet). São duas partes:
+
+- A API de **categorias** já existe. Ela é outro projeto, que roda separado
+  deste, e a chamada a ela **está ligada de verdade**.
+- A API de **frutas** (cadastrar e pesquisar) **ainda não existe**, então essas
+  duas chamadas estão **comentadas**.
+
+Tudo isso fica no arquivo `FrutaApi.cs`.
 
 ### Por que existe um arquivo só para isso
 
 As telas nunca falam HTTP direto. Elas chamam:
 
 ```csharp
+FrutaApi.ObterTipos();
 FrutaApi.Cadastrar(fruta);
 FrutaApi.Pesquisar(categoria, nome);
 ```
@@ -747,7 +766,103 @@ FrutaApi.Pesquisar(categoria, nome);
 Se amanhã o endereço ou o formato da API mudar, **só o `FrutaApi.cs` muda**. As
 telas continuam iguais. Isso se chama **centralizar a dependência**.
 
-### As duas chamadas esperadas
+### A chamada que já funciona: categorias
+
+```
+GET https://localhost:7069/Categoria
+
+Resposta esperada: 200 OK
+[
+  { "id": 1, "descricao": "Ácida" },
+  ...
+]
+```
+
+O endereço fica na constante `FrutaApi.UrlCategorias`. Para o programa entender
+esse JSON existe a classe `Categoria`:
+
+```csharp
+[DataContract]
+public class Categoria
+{
+    [DataMember(Name = "id")]
+    public int Id { get; set; }
+
+    [DataMember(Name = "descricao")]
+    public string Descricao { get; set; }
+}
+```
+
+- `[DataContract]` avisa o leitor de JSON de que a classe pode ser montada a
+  partir de um JSON.
+- `[DataMember(Name = "descricao")]` diz **qual campo do JSON** vai em cada
+  propriedade. É necessário porque no JSON o nome vem em minúsculo e em C# o
+  costume é começar com maiúscula.
+
+Quem faz a chamada é `FrutaApi.ListarCategorias()`:
+
+```csharp
+try
+{
+    using (HttpClient cliente = new HttpClient())
+    {
+        cliente.Timeout = TimeSpan.FromSeconds(5);
+
+        HttpResponseMessage resposta = cliente.GetAsync(UrlCategorias).Result;
+
+        if (!resposta.IsSuccessStatusCode)
+        {
+            return new List<Categoria>();
+        }
+
+        using (Stream corpo = resposta.Content.ReadAsStreamAsync().Result)
+        {
+            DataContractJsonSerializer leitor =
+                new DataContractJsonSerializer(typeof(List<Categoria>));
+
+            List<Categoria> categorias = (List<Categoria>)leitor.ReadObject(corpo);
+            // ...
+            return categorias;
+        }
+    }
+}
+catch (Exception)
+{
+    return new List<Categoria>();
+}
+```
+
+Pedaço por pedaço:
+
+- `HttpClient` é quem faz o pedido pela rede. `GetAsync` faz um `GET`.
+- `Timeout` de 5 segundos: sem isso ele esperaria até 100 segundos, com a tela
+  congelada.
+- `IsSuccessStatusCode` é `true` quando a API respondeu com um código de sucesso
+  (como `200 OK`).
+- `DataContractJsonSerializer` transforma o JSON em uma `List<Categoria>`. Ele
+  já vem no .NET — só exige a referência `System.Runtime.Serialization`, que já
+  está no projeto.
+- O `try`/`catch` é **obrigatório**: se a API estiver desligada, o `HttpClient`
+  lança uma exceção. Sem o `catch`, o programa fecharia na cara do usuário.
+
+As telas não chamam `ListarCategorias()` direto. Elas chamam
+`FrutaApi.ObterTipos()`, que faz três coisas:
+
+1. Pega só o texto (`Descricao`) de cada categoria, porque é isso que a lista
+   suspensa mostra.
+2. Se não veio nenhuma categoria (API fora do ar), devolve a **lista reserva**
+   `Fruta.Tipos`. O programa continua funcionando.
+3. **Guarda o resultado** numa variável e, da segunda vez em diante, devolve o
+   que guardou. Assim o Cadastro e o Estoque mostram sempre a mesma lista. Para
+   buscar as categorias de novo, feche e abra o programa.
+
+> **Se as categorias da API não aparecerem**, confira: (1) o projeto da API
+> está rodando? (2) abra `https://localhost:7069/Categoria` no navegador — se
+> ele reclamar do certificado, rode `dotnet dev-certs https --trust` no
+> projeto da API. Enquanto o Windows não confia no certificado, a chamada falha
+> e o programa usa a lista reserva.
+
+### As duas chamadas esperadas (ainda sem API)
 
 **Cadastrar uma fruta:**
 
@@ -789,9 +904,9 @@ Resposta esperada: 200 OK
 Os dois parâmetros são opcionais: enviar vazio significa "não filtre por este
 campo".
 
-### Enquanto a API não existe
+### Enquanto a API de frutas não existe
 
-Cada método devolve um valor "vazio", propositalmente:
+`Cadastrar` e `Pesquisar` devolvem um valor "vazio", propositalmente:
 
 ```csharp
 public static bool Cadastrar(Fruta fruta)
@@ -819,25 +934,27 @@ Para ver o desenho da tabela funcionando, abra `EstoqueForm.cs`, comente a linha
 `List<Fruta> encontradas = FrutaApi.Pesquisar(categoria, nome);` e descomente o
 bloco de frutas de exemplo logo abaixo dela. Depois desfaça.
 
-### Como ativar a API de verdade
+### Como ativar a API de frutas de verdade
 
 1. **Trocar o endereço.** Em `FrutaApi.cs`, ajuste `BaseUrl`.
-2. **Descomentar** o corpo dos dois métodos.
-3. **Adicionar a leitura de JSON.** O projeto ainda não tem nenhuma biblioteca
-   para transformar JSON em objetos. Escolha uma:
+2. **Descomentar** o corpo de `Cadastrar` e de `Pesquisar`.
+3. **Ler o JSON das frutas.** O código comentado de `Pesquisar` usa
+   `JsonConvert`, que o projeto não tem. Escolha um caminho:
+   - **`DataContractJsonSerializer`** — é o que `ListarCategorias()` já usa,
+     então não precisa instalar nada. Coloque `[DataContract]` e `[DataMember]`
+     na classe `Fruta`, do mesmo jeito que foi feito em `Categoria`, e troque a
+     linha do `JsonConvert` pelo mesmo código de leitura.
    - **`Newtonsoft.Json`** — instale pelo NuGet (*Ferramentas → Gerenciador de
-     Pacotes NuGet*). É a mais usada e a mais simples:
+     Pacotes NuGet*). É a mais usada e a mais curta de escrever:
      `JsonConvert.DeserializeObject<List<Fruta>>(json)`.
-   - **`DataContractJsonSerializer`** — já vem no .NET, mas exige adicionar a
-     referência `System.Runtime.Serialization` e é mais verboso.
 
    `System.Net.Http` (o `HttpClient`) **já está referenciado** no projeto.
 4. **Tratar o retorno.** Em `CadastroForm.cs`, troque a linha
    `FrutaApi.Cadastrar(fruta);` pelo bloco `if` que já está comentado logo
    abaixo dela, para avisar o usuário quando a API recusar o cadastro.
-5. **Estudar `async`/`await`.** O código comentado usa `.Result`, que é o jeito
-   mais simples de esperar uma resposta — mas ele **congela a tela** enquanto a
-   API não responde. O jeito correto em programas reais é `async`/`await`. Fica
+5. **Estudar `async`/`await`.** O código (o comentado e o das categorias) usa
+   `.Result`, que é o jeito mais simples de esperar uma resposta — mas ele
+   **congela a tela** enquanto a API não responde. O jeito correto em programas reais é `async`/`await`. Fica
    como assunto para a próxima etapa do curso.
 
 ---
@@ -876,7 +993,9 @@ registra sozinho. Se criar o arquivo na mão, abra o `.csproj` e adicione:
 
 Confira um por um:
 
-1. A tela abre com a lista de tipos preenchida e a prévia vazia.
+1. A tela abre com a lista de tipos preenchida e a prévia vazia. Com a API de
+   categorias rodando, aparecem as categorias dela; com a API desligada,
+   aparecem os 5 tipos da lista reserva.
 2. Clicar em **Cadastrar** com tudo em branco → aviso, e **não** troca de tela.
 3. Digitar `abc` em Quantidade → aviso específico daquele campo.
 4. Digitar `abc` em Valor → aviso específico daquele campo.

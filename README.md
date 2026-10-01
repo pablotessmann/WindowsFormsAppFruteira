@@ -49,7 +49,8 @@ Consulta do que está cadastrado:
 | Arquivo | Responsabilidade |
 |---|---|
 | `Program.cs` | Ponto de entrada; abre a tela de Cadastro |
-| `Fruta.cs` | Modelo da fruta e a lista de tipos aceitos |
+| `Fruta.cs` | Modelo da fruta e a lista reserva de tipos |
+| `Categoria.cs` | Modelo da categoria devolvida pela API |
 | `FrutaApi.cs` | Único ponto de comunicação com a API |
 | `CadastroForm.cs` | Regras da tela de cadastro |
 | `CadastroForm.Designer.cs` | Layout da tela de cadastro (gerado pelo Designer) |
@@ -77,9 +78,19 @@ bin\Debug\WindowsFormsAppFruteira.exe
 
 ## Estado atual
 
-Todas as operações de dados são feitas por **API**, que **ainda não está
-implementada**. Em `FrutaApi.cs`, cada chamada esperada está documentada e
-**comentada**, pronta para ser ativada:
+Todas as operações de dados são feitas por **API**.
+
+As **categorias** (que preenchem o campo Tipo do Cadastro e o filtro Categoria
+do Estoque) já vêm de uma API real, mantida em outro projeto:
+
+```
+GET  https://localhost:7069/Categoria         lista as categorias
+```
+
+Se essa API estiver fora do ar, o sistema usa a lista reserva `Fruta.Tipos`.
+
+A API de **frutas** **ainda não está implementada**. Em `FrutaApi.cs`, cada
+chamada esperada está documentada e **comentada**, pronta para ser ativada:
 
 ```
 POST /api/frutas                              cadastra uma fruta (multipart/form-data)
@@ -88,7 +99,7 @@ GET  /api/frutas?categoria=&nome=             pesquisa o estoque
 
 Por isso, ao executar o sistema hoje: o cadastro valida os dados e navega para o
 Estoque normalmente, mas a pesquisa responde *"Nenhuma fruta encontrada"* —
-esse é o comportamento esperado enquanto não há servidor.
+esse é o comportamento esperado enquanto não há servidor de frutas.
 
 O passo a passo para ligar a API de verdade está na **etapa 10** do guia.
 

@@ -27,9 +27,9 @@ namespace WindowsFormsAppFruteira
             cmbCategoria.Items.Add(TodasAsCategorias);
 
             // ...e depois os mesmos tipos usados na tela de Cadastro.
-            // É por isso que os dois combos leem Fruta.Tipos: o que foi
-            // cadastrado como "Cítrica" é encontrado ao pesquisar "Cítrica".
-            cmbCategoria.Items.AddRange(Fruta.Tipos);
+            // É por isso que os dois combos chamam FrutaApi.ObterTipos(): o
+            // que foi cadastrado como "Ácida" é encontrado ao pesquisar "Ácida".
+            cmbCategoria.Items.AddRange(FrutaApi.ObterTipos());
 
             // Começa em "(Todas)" para a primeira pesquisa trazer tudo.
             cmbCategoria.SelectedIndex = 0;

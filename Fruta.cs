@@ -19,7 +19,7 @@ namespace WindowsFormsAppFruteira
         /// <summary>
         /// Tipo da fruta. É também o campo pesquisado pelo filtro
         /// "Categoria" da tela de Estoque, por isso os valores possíveis
-        /// ficam fixos em <see cref="Tipos"/>.
+        /// vêm sempre do mesmo lugar: FrutaApi.ObterTipos().
         /// </summary>
         public string Tipo { get; set; }
 
@@ -33,12 +33,15 @@ namespace WindowsFormsAppFruteira
         public string CaminhoImagem { get; set; }
 
         /// <summary>
-        /// Tipos de fruta aceitos pelo sistema.
+        /// Lista RESERVA de tipos de fruta.
         ///
-        /// Esta lista é a "fonte única da verdade": a tela de Cadastro a usa
-        /// para preencher o cmbTipo e a tela de Estoque a usa para preencher o
-        /// cmbCategoria. Assim é impossível cadastrar "Citrica" e pesquisar
-        /// "Cítrica" e não achar nada.
+        /// A lista de verdade vem da API de categorias. Esta aqui só é usada
+        /// quando a API não responde, para os combos não ficarem vazios.
+        ///
+        /// As telas NÃO leem esta lista direto: tanto o cmbTipo (Cadastro)
+        /// quanto o cmbCategoria (Estoque) chamam FrutaApi.ObterTipos(), que
+        /// é a "fonte única da verdade". Assim é impossível cadastrar com uma
+        /// lista e pesquisar com outra.
         ///
         /// static  = pertence à classe Fruta, não a uma fruta específica.
         /// readonly = ninguém pode trocar a lista depois que o programa inicia.

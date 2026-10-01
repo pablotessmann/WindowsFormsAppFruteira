@@ -24,8 +24,10 @@ namespace WindowsFormsAppFruteira
         /// </summary>
         private void CadastroForm_Load(object sender, EventArgs e)
         {
-            // Preenche a lista de tipos a partir da classe Fruta.
-            cmbTipo.Items.AddRange(Fruta.Tipos);
+            // Preenche a lista de tipos com as categorias que vêm da API.
+            // Se a API estiver fora do ar, ObterTipos() devolve a lista
+            // reserva Fruta.Tipos, então o combo nunca fica vazio.
+            cmbTipo.Items.AddRange(FrutaApi.ObterTipos());
 
             // Não faz sentido cadastrar fruta com validade no passado.
             dtpValidade.MinDate = DateTime.Today;
