@@ -159,12 +159,14 @@
             // 
             // btnVoltar
             // 
+            this.btnVoltar.BackColor = System.Drawing.Color.Blue;
+            this.btnVoltar.ForeColor = System.Drawing.Color.White;
             this.btnVoltar.Location = new System.Drawing.Point(602, 386);
             this.btnVoltar.Name = "btnVoltar";
             this.btnVoltar.Size = new System.Drawing.Size(177, 43);
             this.btnVoltar.TabIndex = 4;
             this.btnVoltar.Text = "Voltar";
-            this.btnVoltar.UseVisualStyleBackColor = true;
+            this.btnVoltar.UseVisualStyleBackColor = false;
             this.btnVoltar.Click += new System.EventHandler(this.btnVoltar_Click);
             // 
             // EstoqueForm
