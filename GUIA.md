@@ -247,7 +247,7 @@ Se for renomear **na mão**, cuidado: cada controle aparece em **5 lugares** do
 A tela ficou assim:
 
 ```
- CadastroForm  (831 x 503)
+ CadastroForm  (desenhada em 831 x 503 — abre maximizada)
  +---------------------------------------------------------------+
  | Cadastro de Frutas                                            |
  |                                                               |
@@ -284,6 +284,58 @@ cmbTipo.DropDownStyle = ComboBoxStyle.DropDownList;
 ```
 
 Sem ela, o `ComboBox` aceitaria digitação livre e o problema voltaria.
+
+### Tela que acompanha a janela: `Anchor`
+
+A tela abre **maximizada**, ocupando o monitor inteiro. Quem faz isso é uma
+propriedade do formulário:
+
+```csharp
+this.WindowState = FormWindowState.Maximized;
+```
+
+Só que maximizar não basta. Cada controle tem uma posição fixa (`Location`) e
+um tamanho fixo (`Size`); se a janela cresce e ninguém avisa os controles, eles
+ficam todos amontoados no canto de cima, com um espaço vazio enorme em volta.
+
+Quem resolve é a propriedade **`Anchor`** ("âncora"). Ela diz em quais bordas
+da janela o controle fica **preso**. A distância até uma borda presa nunca
+muda:
+
+- preso em **uma** borda de cada direção (o padrão é `Top, Left`) → o controle
+  fica parado no lugar;
+- preso em `Right` em vez de `Left` → o controle **anda** junto com a borda
+  direita;
+- preso em `Left` **e** `Right` ao mesmo tempo → o controle **estica**, porque
+  precisa manter as duas distâncias.
+
+O mesmo vale para `Top` e `Bottom`. No Cadastro ficou assim:
+
+| Controle | Anchor | O que acontece quando a janela cresce |
+|---|---|---|
+| `picPrevia` | Top, Bottom, Left | Mesma largura, cresce na altura |
+| `txtNome`, `txtQuantidade`, `cmbTipo`, `txtValor`, `dtpValidade` | Top, Left, Right | Esticam até a borda direita |
+| `btnEscolherImagem`, `btnEstoque` | Bottom, Left | Ficam colados embaixo, à esquerda |
+| `btnCancelar`, `btnCadastrar` | Bottom, Right | Ficam colados embaixo, à direita |
+| Os rótulos (`lblNome`...) | Top, Left (padrão) | Não se mexem |
+
+No Designer: selecione o controle, abra a propriedade **Anchor** na janela
+Propriedades e clique nas barrinhas das bordas que devem ficar presas.
+
+Falta um detalhe. O usuário pode restaurar a janela e **encolhê-la**, e aí os
+campos passariam por cima da prévia. Por isso, no construtor, o tamanho
+desenhado no Designer vira o menor tamanho permitido:
+
+```csharp
+public CadastroForm()
+{
+    InitializeComponent();
+    this.MinimumSize = this.Size;
+}
+```
+
+Neste ponto a janela ainda não apareceu na tela, então `this.Size` é o tamanho
+do Designer, e não o tamanho maximizado.
 
 ### O evento `Load`
 
@@ -673,7 +725,7 @@ a linha seguinte ao `ShowDialog()`.
 ## Etapa 8 — Montar a tela de Estoque
 
 ```
- EstoqueForm  (800 x 450)
+ EstoqueForm  (desenhada em 800 x 450 — abre maximizada)
  +-------------------------------------------------------------+
  | Estoque de Frutas                                           |
  |  +-- Pesquisar ------------------------+                     |
@@ -713,13 +765,64 @@ lstEstoque.GridLines = true;       // desenha as linhas de grade
 
 No Designer, cada coluna é um `ColumnHeader`:
 
-| Coluna | Largura |
-|---|---|
-| Fruta | 220 |
-| Quantidade | 110 |
-| Validade | 120 |
-| Valor | 110 |
-| Tipo | 180 |
+| Coluna | Largura no Designer | Parte da tabela |
+|---|---|---|
+| Fruta | 220 | 30% |
+| Quantidade | 110 | 15% |
+| Validade | 120 | 16% |
+| Valor | 110 | 15% |
+| Tipo | 180 | 24% |
+
+### A tela e as colunas acompanham a janela
+
+O Estoque também abre maximizado e usa o mesmo `Anchor` explicado na
+[Etapa 4](#etapa-4--montar-a-tela-de-cadastro):
+
+| Controle | Anchor | O que acontece quando a janela cresce |
+|---|---|---|
+| `grpPesquisar` | Top, Left, Right | A caixa dos filtros estica |
+| `txtNome` (dentro da caixa) | Top, Left, Right | Estica junto com a caixa |
+| `btnPesquisar` | Top, Right | Fica colado à direita |
+| `lstEstoque` | Top, Bottom, Left, Right | Estica nos dois sentidos |
+| `btnVoltar` | Bottom, Right | Fica colado no canto de baixo |
+
+Repare no `txtNome`: a âncora de um controle vale em relação a **quem o
+contém**. Ele está dentro do `grpPesquisar`, então fica preso às bordas da
+caixa, e não às bordas da janela.
+
+O `Anchor` estica o `ListView`, mas **as colunas não acompanham sozinhas**:
+elas continuariam com a largura do Designer e sobraria um vazio à direita. Por
+isso a largura de cada coluna é recalculada sempre que a tabela muda de
+tamanho, no evento `Resize`:
+
+```csharp
+private void lstEstoque_Resize(object sender, EventArgs e)
+{
+    AjustarColunas();
+}
+
+private void AjustarColunas()
+{
+    int largura = lstEstoque.ClientSize.Width;
+
+    if (largura <= 0)
+    {
+        return;
+    }
+
+    colFruta.Width = largura * 30 / 100;
+    colQuantidade.Width = largura * 15 / 100;
+    colValidade.Width = largura * 16 / 100;
+    colValor.Width = largura * 15 / 100;
+    colTipo.Width = largura * 24 / 100;
+}
+```
+
+Usamos `ClientSize.Width`, e não `Width`, porque `ClientSize` é a área **de
+dentro** do `ListView`: já desconta a borda e a barra de rolagem. Com `Width`
+as colunas passariam um pouco do limite e apareceria uma barra de rolagem
+horizontal. O `EstoqueForm_Load` também chama `AjustarColunas()`, para as
+colunas já nascerem no tamanho certo.
 
 ### Preenchendo as linhas
 
@@ -1221,6 +1324,10 @@ Confira um por um:
    "Nenhuma fruta encontrada".
 9. **Voltar** → o Cadastro reaparece. Feche o Cadastro e confirme no
    Gerenciador de Tarefas que o processo terminou.
+10. As duas telas abrem **maximizadas**. Restaure a janela e arraste a borda:
+    os campos e a tabela esticam, os botões continuam colados nas bordas, as 5
+    colunas preenchem a largura da tabela e a janela **não** encolhe abaixo do
+    tamanho em que foi desenhada.
 
 ---
 

@@ -16,6 +16,11 @@ namespace WindowsFormsAppFruteira
         public EstoqueForm()
         {
             InitializeComponent();
+
+            // O tamanho desenhado no Designer vira o MENOR tamanho permitido,
+            // igual ao que fizemos no Cadastro: a janela pode crescer, mas não
+            // encolher até os controles se sobreporem.
+            this.MinimumSize = this.Size;
         }
 
         /// <summary>
@@ -33,6 +38,9 @@ namespace WindowsFormsAppFruteira
 
             // Começa em "(Todas)" para a primeira pesquisa trazer tudo.
             cmbCategoria.SelectedIndex = 0;
+
+            // Garante as colunas no tamanho certo já na abertura da tela.
+            AjustarColunas();
         }
 
         /// <summary>
@@ -129,6 +137,45 @@ namespace WindowsFormsAppFruteira
 
                 lstEstoque.Items.Add(linha);
             }
+        }
+
+        /// <summary>
+        /// Executa toda vez que a tabela muda de tamanho — ao abrir a tela e
+        /// sempre que o usuário redimensiona a janela.
+        /// </summary>
+        private void lstEstoque_Resize(object sender, EventArgs e)
+        {
+            AjustarColunas();
+        }
+
+        /// <summary>
+        /// Divide a largura da tabela entre as cinco colunas.
+        ///
+        /// O Anchor estica o ListView junto com a janela, mas as colunas NÃO
+        /// acompanham sozinhas: elas ficariam com a largura fixa do Designer e
+        /// sobraria um espaço vazio à direita. Por isso cada coluna recebe uma
+        /// porcentagem da largura disponível.
+        /// </summary>
+        private void AjustarColunas()
+        {
+            // ClientSize é a área de DENTRO do ListView: já desconta a borda e
+            // a barra de rolagem. Com Width as colunas passariam um pouco do
+            // limite e apareceria uma barra de rolagem horizontal.
+            int largura = lstEstoque.ClientSize.Width;
+
+            // Janela minimizada: não há o que ajustar.
+            if (largura <= 0)
+            {
+                return;
+            }
+
+            // As porcentagens somam 100. Como a divisão de inteiros joga fora
+            // a parte quebrada, a soma nunca passa da largura disponível.
+            colFruta.Width = largura * 30 / 100;
+            colQuantidade.Width = largura * 15 / 100;
+            colValidade.Width = largura * 16 / 100;
+            colValor.Width = largura * 15 / 100;
+            colTipo.Width = largura * 24 / 100;
         }
 
         /// <summary>

@@ -60,7 +60,9 @@
             // 
             // picPrevia
             // 
-            this.picPrevia.BackColor = System.Drawing.SystemColors.Window;
+            this.picPrevia.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.picPrevia.BackColor =System.Drawing.SystemColors.Window;
             this.picPrevia.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picPrevia.Location = new System.Drawing.Point(25, 66);
             this.picPrevia.Name = "picPrevia";
@@ -71,7 +73,8 @@
             // 
             // btnEscolherImagem
             // 
-            this.btnEscolherImagem.Location = new System.Drawing.Point(25, 380);
+            this.btnEscolherImagem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnEscolherImagem.Location =new System.Drawing.Point(25, 380);
             this.btnEscolherImagem.Name = "btnEscolherImagem";
             this.btnEscolherImagem.Size = new System.Drawing.Size(222, 40);
             this.btnEscolherImagem.TabIndex = 2;
@@ -90,7 +93,9 @@
             // 
             // txtNome
             // 
-            this.txtNome.Location = new System.Drawing.Point(579, 88);
+            this.txtNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNome.Location =new System.Drawing.Point(579, 88);
             this.txtNome.MaxLength = 60;
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(222, 26);
@@ -107,7 +112,9 @@
             // 
             // txtQuantidade
             // 
-            this.txtQuantidade.Location = new System.Drawing.Point(579, 156);
+            this.txtQuantidade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtQuantidade.Location =new System.Drawing.Point(579, 156);
             this.txtQuantidade.MaxLength = 9;
             this.txtQuantidade.Name = "txtQuantidade";
             this.txtQuantidade.Size = new System.Drawing.Size(222, 26);
@@ -124,7 +131,9 @@
             // 
             // cmbTipo
             // 
-            this.cmbTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbTipo.DropDownStyle =System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTipo.FormattingEnabled = true;
             this.cmbTipo.Location = new System.Drawing.Point(579, 224);
             this.cmbTipo.Name = "cmbTipo";
@@ -142,7 +151,9 @@
             // 
             // txtValor
             // 
-            this.txtValor.Location = new System.Drawing.Point(579, 292);
+            this.txtValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtValor.Location =new System.Drawing.Point(579, 292);
             this.txtValor.MaxLength = 12;
             this.txtValor.Name = "txtValor";
             this.txtValor.Size = new System.Drawing.Size(222, 26);
@@ -159,7 +170,9 @@
             // 
             // dtpValidade
             // 
-            this.dtpValidade.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpValidade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dtpValidade.Format =System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpValidade.Location = new System.Drawing.Point(579, 360);
             this.dtpValidade.Name = "dtpValidade";
             this.dtpValidade.Size = new System.Drawing.Size(222, 26);
@@ -167,7 +180,8 @@
             // 
             // btnCadastrar
             // 
-            this.btnCadastrar.Location = new System.Drawing.Point(579, 436);
+            this.btnCadastrar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCadastrar.Location =new System.Drawing.Point(579, 436);
             this.btnCadastrar.Name = "btnCadastrar";
             this.btnCadastrar.Size = new System.Drawing.Size(222, 46);
             this.btnCadastrar.TabIndex = 13;
@@ -177,7 +191,8 @@
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(351, 436);
+            this.btnCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancelar.Location =new System.Drawing.Point(351, 436);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(222, 46);
             this.btnCancelar.TabIndex = 14;
@@ -187,7 +202,8 @@
             // 
             // btnEstoque
             // 
-            this.btnEstoque.Location = new System.Drawing.Point(25, 436);
+            this.btnEstoque.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnEstoque.Location =new System.Drawing.Point(25, 436);
             this.btnEstoque.Name = "btnEstoque";
             this.btnEstoque.Size = new System.Drawing.Size(222, 46);
             this.btnEstoque.TabIndex = 15;
@@ -221,6 +237,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CadastroForm";
             this.Text = "Fruteira";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.CadastroForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picPrevia)).EndInit();
             this.ResumeLayout(false);

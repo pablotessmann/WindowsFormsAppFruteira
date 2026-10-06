@@ -17,6 +17,14 @@ namespace WindowsFormsAppFruteira
         public CadastroForm()
         {
             InitializeComponent();
+
+            // A tela abre maximizada (WindowState, no Designer), mas o usuário
+            // pode restaurar e redimensionar a janela. Aqui dizemos que o
+            // tamanho desenhado no Designer é o MENOR tamanho permitido: sem
+            // isto daria para encolher a janela até os campos ficarem uns por
+            // cima dos outros. Neste ponto this.Size ainda é o tamanho do
+            // Designer, porque a janela só é maximizada quando aparece na tela.
+            this.MinimumSize = this.Size;
         }
 
         /// <summary>

@@ -58,6 +58,8 @@
             // 
             // grpPesquisar
             // 
+            this.grpPesquisar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpPesquisar.Controls.Add(this.lblNome);
             this.grpPesquisar.Controls.Add(this.lblCategoria);
             this.grpPesquisar.Controls.Add(this.txtNome);
@@ -98,7 +100,9 @@
             // 
             // txtNome
             // 
-            this.txtNome.Location = new System.Drawing.Point(256, 43);
+            this.txtNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNome.Location =new System.Drawing.Point(256, 43);
             this.txtNome.MaxLength = 60;
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(203, 26);
@@ -106,7 +110,8 @@
             // 
             // btnPesquisar
             // 
-            this.btnPesquisar.Location = new System.Drawing.Point(602, 93);
+            this.btnPesquisar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPesquisar.Location =new System.Drawing.Point(602, 93);
             this.btnPesquisar.Name = "btnPesquisar";
             this.btnPesquisar.Size = new System.Drawing.Size(177, 43);
             this.btnPesquisar.TabIndex = 2;
@@ -116,6 +121,9 @@
             // 
             // lstEstoque
             // 
+            this.lstEstoque.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstEstoque.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colFruta,
             this.colQuantidade,
@@ -131,6 +139,7 @@
             this.lstEstoque.TabIndex = 3;
             this.lstEstoque.UseCompatibleStateImageBehavior = false;
             this.lstEstoque.View = System.Windows.Forms.View.Details;
+            this.lstEstoque.Resize += new System.EventHandler(this.lstEstoque_Resize);
             // 
             // colFruta
             // 
@@ -159,7 +168,8 @@
             // 
             // btnVoltar
             // 
-            this.btnVoltar.Location = new System.Drawing.Point(602, 386);
+            this.btnVoltar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnVoltar.Location =new System.Drawing.Point(602, 386);
             this.btnVoltar.Name = "btnVoltar";
             this.btnVoltar.Size = new System.Drawing.Size(177, 43);
             this.btnVoltar.TabIndex = 4;
@@ -181,6 +191,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EstoqueForm";
             this.Text = "Estoque";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.EstoqueForm_Load);
             this.grpPesquisar.ResumeLayout(false);
             this.grpPesquisar.PerformLayout();
