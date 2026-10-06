@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace WindowsFormsAppFruteira
 {
@@ -14,29 +15,38 @@ namespace WindowsFormsAppFruteira
     /// ou o formato da API mudar, só este arquivo muda — as telas continuam
     /// iguais.
     ///
-    /// ATENÇÃO, ALUNO: a API de FRUTAS ainda NÃO existe. Por isso o corpo de
-    /// Cadastrar e de Pesquisar está comentado e devolvendo um valor "vazio".
-    /// O passo a passo para ativar de verdade está na etapa 10 do GUIA.md.
+    /// A API é outro projeto, que roda separado deste. Ela tem duas partes,
+    /// e as duas estão ligadas de verdade aqui:
     ///
-    /// Já a API de CATEGORIAS existe (é outro projeto, que roda separado
-    /// deste) e a chamada a ela está ligada de verdade em ListarCategorias().
+    ///   /Categoria -> ListarCategorias()
+    ///   /Fruta     -> Pesquisar(...) e Cadastrar(...)
+    ///
+    /// Os detalhes de cada chamada estão na etapa 10 do GUIA.md.
     /// </summary>
     public static class FrutaApi
     {
-        /// <summary>Endereço base da API. Trocar quando a API estiver publicada.</summary>
-        public const string BaseUrl = "https://localhost:5001";
+        /// <summary>Endereço da API de categorias.</summary>
+        public const string UrlCategorias = "https://localhost:7069/Categoria";
 
         /// <summary>
-        /// Endereço da API de categorias. Ela fica em outro projeto e em outra
-        /// porta, por isso tem um endereço só dela.
+        /// Endereço da API de frutas. O mesmo endereço serve para pesquisar
+        /// (GET) e para cadastrar (POST): o que muda é o verbo da chamada.
         /// </summary>
-        public const string UrlCategorias = "https://localhost:7069/Categoria";
+        public const string UrlFrutas = "https://localhost:7069/Fruta";
 
         /// <summary>
         /// Guarda os tipos já carregados, para o programa perguntar à API uma
         /// vez só. Começa null, que aqui significa "ainda não carregamos".
         /// </summary>
         private static string[] tiposCarregados;
+
+        /// <summary>
+        /// Guarda as categorias completas (Id + Descricao) que vieram da API.
+        /// Os combos mostram só o texto, mas a API de frutas trabalha com o
+        /// Id — é esta lista que permite trocar um pelo outro. Fica vazia
+        /// quando a API não respondeu e os combos usam a lista reserva.
+        /// </summary>
+        private static List<Categoria> categoriasCarregadas = new List<Categoria>();
 
         /// <summary>
         /// Busca na API a lista de categorias de fruta.
@@ -130,16 +140,23 @@ namespace WindowsFormsAppFruteira
             }
 
             // Os combos só precisam do texto, então tiramos a Descricao de
-            // cada categoria e ignoramos as que vierem sem texto.
+            // cada categoria e ignoramos as que vierem sem texto. A categoria
+            // completa também é guardada, para sabermos o Id de cada texto.
             List<string> descricoes = new List<string>();
+            List<Categoria> categorias = new List<Categoria>();
 
             foreach (Categoria categoria in ListarCategorias())
             {
                 if (categoria != null && !string.IsNullOrWhiteSpace(categoria.Descricao))
                 {
-                    descricoes.Add(categoria.Descricao.Trim());
+                    categoria.Descricao = categoria.Descricao.Trim();
+
+                    descricoes.Add(categoria.Descricao);
+                    categorias.Add(categoria);
                 }
             }
+
+            categoriasCarregadas = categorias;
 
             if (descricoes.Count == 0)
             {
@@ -155,115 +172,213 @@ namespace WindowsFormsAppFruteira
         }
 
         /// <summary>
+        /// Descobre o Id de uma categoria a partir do texto escolhido no combo.
+        /// </summary>
+        /// <returns>
+        /// O Id da categoria. Zero se o texto não for de nenhuma categoria da
+        /// API — é o que acontece quando os combos estão com a lista reserva.
+        /// </returns>
+        public static int ObterIdCategoria(string descricao)
+        {
+            // Garante que as categorias já foram buscadas na API.
+            ObterTipos();
+
+            foreach (Categoria categoria in categoriasCarregadas)
+            {
+                if (categoria.Descricao == descricao)
+                {
+                    return categoria.Id;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Faz o caminho contrário: a partir do Id que vem em cada fruta,
+        /// descobre o texto da categoria para mostrar na tela.
+        /// </summary>
+        /// <returns>O texto da categoria. String vazia se o Id não existir.</returns>
+        public static string ObterDescricaoCategoria(int idCategoria)
+        {
+            ObterTipos();
+
+            foreach (Categoria categoria in categoriasCarregadas)
+            {
+                if (categoria.Id == idCategoria)
+                {
+                    return categoria.Descricao;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Envia uma fruta nova para a API.
         /// </summary>
         /// <returns>true se a API confirmou o cadastro.</returns>
         public static bool Cadastrar(Fruta fruta)
         {
             // ----------------------------------------------------------------
-            // CHAMADA ESPERADA
+            // CHAMADA
             //
-            //   POST {BaseUrl}/api/frutas
-            //   Content-Type: multipart/form-data
+            //   POST https://localhost:7069/Fruta
+            //   Content-Type: application/json
             //
-            //   nome      = "Banana Prata"
-            //   quantidade= 120
-            //   tipo      = "Tropical"
-            //   valor     = 7.49
-            //   validade  = "2026-12-31"        (formato yyyy-MM-dd)
-            //   imagem    = <bytes do arquivo>  (o arquivo em fruta.CaminhoImagem)
+            //   {
+            //     "nome": "Banana Prata",
+            //     "preco": 7.49,
+            //     "quantidade": 120,
+            //     "id_categoria": 2,
+            //     "data_validade": "2026-12-31T00:00:00",
+            //     "hash_img": "iVBORw0KGgo..."     (a imagem em Base64)
+            //   }
             //
-            //   Resposta esperada: 201 Created
+            //   O "id" não é enviado: quem cria o número é a API.
             //
-            // Usamos multipart/form-data (e não JSON) porque estamos enviando
-            // um ARQUIVO junto com os campos de texto.
+            //   Resposta esperada: um código de sucesso (200 OK ou 201 Created)
             // ----------------------------------------------------------------
 
-            // using (HttpClient cliente = new HttpClient())
-            // using (MultipartFormDataContent corpo = new MultipartFormDataContent())
-            // {
-            //     corpo.Add(new StringContent(fruta.Nome), "nome");
-            //     corpo.Add(new StringContent(fruta.Quantidade.ToString()), "quantidade");
-            //     corpo.Add(new StringContent(fruta.Tipo), "tipo");
-            //
-            //     // CultureInfo.InvariantCulture faz o decimal virar "7.49" (ponto)
-            //     // e não "7,49" (vírgula), que é o que a API espera.
-            //     corpo.Add(new StringContent(
-            //         fruta.Valor.ToString(CultureInfo.InvariantCulture)), "valor");
-            //
-            //     corpo.Add(new StringContent(
-            //         fruta.Validade.ToString("yyyy-MM-dd")), "validade");
-            //
-            //     byte[] bytesDaImagem = File.ReadAllBytes(fruta.CaminhoImagem);
-            //     ByteArrayContent arquivo = new ByteArrayContent(bytesDaImagem);
-            //     corpo.Add(arquivo, "imagem", Path.GetFileName(fruta.CaminhoImagem));
-            //
-            //     HttpResponseMessage resposta =
-            //         cliente.PostAsync(BaseUrl + "/api/frutas", corpo).Result;
-            //
-            //     return resposta.IsSuccessStatusCode;
-            // }
+            try
+            {
+                // 1) Transformar o objeto Fruta em texto JSON. É o caminho
+                //    inverso do que ListarCategorias() faz: lá usamos
+                //    ReadObject (JSON -> objeto), aqui WriteObject
+                //    (objeto -> JSON).
+                string json;
 
-            // Enquanto não há API, devolvemos false para deixar claro que
-            // NADA foi gravado de verdade.
-            return false;
+                using (MemoryStream memoria = new MemoryStream())
+                {
+                    DataContractJsonSerializer escritor =
+                        new DataContractJsonSerializer(typeof(Fruta));
+
+                    escritor.WriteObject(memoria, fruta);
+
+                    json = Encoding.UTF8.GetString(memoria.ToArray());
+                }
+
+                // 2) Enviar. O StringContent leva o texto e avisa a API, pelo
+                //    "application/json", de que aquele texto é um JSON.
+                using (HttpClient cliente = new HttpClient())
+                using (StringContent corpo = new StringContent(json, Encoding.UTF8, "application/json"))
+                {
+                    cliente.Timeout = TimeSpan.FromSeconds(5);
+
+                    HttpResponseMessage resposta = cliente.PostAsync(UrlFrutas, corpo).Result;
+
+                    return resposta.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception)
+            {
+                // API desligada, demorou demais ou certificado não confiável:
+                // devolvemos false para a tela avisar que NADA foi gravado.
+                return false;
+            }
         }
 
         /// <summary>
         /// Busca as frutas do estoque aplicando os filtros da tela.
+        /// Sem nenhum filtro, traz TODAS as frutas.
         /// </summary>
-        /// <param name="categoria">Tipo da fruta. String vazia = todas.</param>
+        /// <param name="idCategoria">Id da categoria. Zero = todas.</param>
         /// <param name="nome">Parte do nome da fruta. String vazia = todos.</param>
-        /// <returns>As frutas encontradas. Lista vazia se não houver nenhuma.</returns>
-        public static List<Fruta> Pesquisar(string categoria, string nome)
+        /// <returns>
+        /// As frutas encontradas. Lista vazia se não houver nenhuma, ou se a
+        /// API estiver fora do ar.
+        /// </returns>
+        public static List<Fruta> Pesquisar(int idCategoria, string nome)
         {
             // ----------------------------------------------------------------
-            // CHAMADA ESPERADA
+            // CHAMADA
             //
-            //   GET {BaseUrl}/api/frutas?categoria=Tropical&nome=banana
+            //   GET https://localhost:7069/Fruta                          (tudo)
+            //   GET https://localhost:7069/Fruta?id_categoria=2
+            //   GET https://localhost:7069/Fruta?nome=banana
+            //   GET https://localhost:7069/Fruta?id_categoria=2&nome=banana
             //
-            //   Os dois parâmetros são opcionais: mandar vazio significa
-            //   "não filtrar por este campo".
+            //   Os dois filtros são opcionais: só entra no endereço o filtro
+            //   que o usuário preencheu.
             //
             //   Resposta esperada: 200 OK, com um vetor JSON
             //   [
             //     {
+            //       "id": 1,
             //       "nome": "Banana Prata",
+            //       "preco": 7.49,
             //       "quantidade": 120,
-            //       "tipo": "Tropical",
-            //       "valor": 7.49,
-            //       "validade": "2026-12-31",
-            //       "caminhoImagem": "banana.png"
+            //       "id_categoria": 2,
+            //       "data_validade": "2026-12-31T00:00:00",
+            //       "hash_img": "iVBORw0KGgo..."
             //     }
             //   ]
             // ----------------------------------------------------------------
 
-            // using (HttpClient cliente = new HttpClient())
-            // {
-            //     // Uri.EscapeDataString troca espaços e acentos por código,
-            //     // senão um nome como "banana prata" quebra a URL.
-            //     string url = BaseUrl + "/api/frutas"
-            //         + "?categoria=" + Uri.EscapeDataString(categoria)
-            //         + "&nome=" + Uri.EscapeDataString(nome);
-            //
-            //     HttpResponseMessage resposta = cliente.GetAsync(url).Result;
-            //
-            //     if (!resposta.IsSuccessStatusCode)
-            //     {
-            //         return new List<Fruta>();
-            //     }
-            //
-            //     string json = resposta.Content.ReadAsStringAsync().Result;
-            //
-            //     // Para transformar o JSON em List<Fruta> é preciso adicionar
-            //     // uma biblioteca de desserialização — veja a etapa 10 do GUIA.md.
-            //     return JsonConvert.DeserializeObject<List<Fruta>>(json);
-            // }
+            // 1) Montar o endereço. Os filtros vão depois de um "?", separados
+            //    por "&". Guardamos cada filtro preenchido em uma lista e no
+            //    fim juntamos tudo com string.Join.
+            List<string> filtros = new List<string>();
 
-            // Enquanto não há API, devolvemos uma lista VAZIA.
-            // Uma lista vazia é diferente de null: a tela pode percorrê-la
-            // sem estourar erro.
-            return new List<Fruta>();
+            if (idCategoria > 0)
+            {
+                filtros.Add("id_categoria=" + idCategoria);
+            }
+
+            if (!string.IsNullOrWhiteSpace(nome))
+            {
+                // Uri.EscapeDataString troca espaços e acentos por código,
+                // senão um nome como "banana prata" quebra o endereço.
+                filtros.Add("nome=" + Uri.EscapeDataString(nome));
+            }
+
+            string url = UrlFrutas;
+
+            // Sem filtro nenhum o endereço fica só ".../Fruta", e a API
+            // devolve todas as frutas.
+            if (filtros.Count > 0)
+            {
+                url = url + "?" + string.Join("&", filtros);
+            }
+
+            // 2) Chamar a API e ler a resposta, do mesmo jeito que em
+            //    ListarCategorias().
+            try
+            {
+                using (HttpClient cliente = new HttpClient())
+                {
+                    cliente.Timeout = TimeSpan.FromSeconds(5);
+
+                    HttpResponseMessage resposta = cliente.GetAsync(url).Result;
+
+                    if (!resposta.IsSuccessStatusCode)
+                    {
+                        return new List<Fruta>();
+                    }
+
+                    using (Stream corpo = resposta.Content.ReadAsStreamAsync().Result)
+                    {
+                        DataContractJsonSerializer leitor =
+                            new DataContractJsonSerializer(typeof(List<Fruta>));
+
+                        List<Fruta> frutas = (List<Fruta>)leitor.ReadObject(corpo);
+
+                        if (frutas == null)
+                        {
+                            return new List<Fruta>();
+                        }
+
+                        return frutas;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Em caso de falha devolvemos uma lista VAZIA.
+                // Uma lista vazia é diferente de null: a tela pode percorrê-la
+                // sem estourar erro.
+                return new List<Fruta>();
+            }
         }
     }
 }

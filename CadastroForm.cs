@@ -134,6 +134,17 @@ namespace WindowsFormsAppFruteira
                 return;
             }
 
+            // A API guarda o NÚMERO (Id) da categoria, e não o texto. O Id só
+            // existe quando as categorias vieram da API: se ela não respondeu,
+            // o combo está com a lista reserva e ObterIdCategoria devolve 0.
+            int idCategoria = FrutaApi.ObterIdCategoria(cmbTipo.SelectedItem.ToString());
+            if (idCategoria == 0)
+            {
+                Avisar("Não foi possível obter as categorias da API. "
+                    + "Verifique se a API está rodando e abra o programa de novo.", cmbTipo);
+                return;
+            }
+
             decimal valor;
             if (!decimal.TryParse(txtValor.Text, out valor))
             {
@@ -154,33 +165,47 @@ namespace WindowsFormsAppFruteira
             }
 
             // ---------- 2) MONTAR O OBJETO ----------
+            // A imagem viaja para a API "dentro" do JSON, e JSON só carrega
+            // texto. Base64 é uma forma de escrever os bytes de um arquivo
+            // usando só letras e números. O try/catch existe porque o arquivo
+            // pode ter sido apagado ou movido depois de escolhido.
+            string imagemBase64;
+            try
+            {
+                imagemBase64 = Convert.ToBase64String(File.ReadAllBytes(caminhoImagem));
+            }
+            catch (Exception)
+            {
+                Avisar("Não foi possível ler o arquivo da imagem. Escolha a imagem de novo.",
+                    btnEscolherImagem);
+                return;
+            }
+
             // Passou por toda a validação: agora juntamos os dados em um objeto
             // Fruta. Esta sintaxe com { } é o "inicializador de objeto" — é o
             // mesmo que criar o objeto e depois atribuir cada propriedade.
             Fruta fruta = new Fruta
             {
                 Nome = txtNome.Text.Trim(),
+                Preco = valor,
                 Quantidade = quantidade,
-                Tipo = cmbTipo.SelectedItem.ToString(),
-                Valor = valor,
-                Validade = dtpValidade.Value,
-                CaminhoImagem = caminhoImagem
+                IdCategoria = idCategoria,
+
+                // .Date joga fora a hora e fica só com o dia.
+                DataValidade = dtpValidade.Value.Date,
+                HashImg = imagemBase64
             };
 
             // ---------- 3) ENVIAR PARA A API ----------
-            // A API ainda não existe, então Cadastrar() devolve sempre false e
-            // por isso NÃO testamos o retorno ainda.
-            FrutaApi.Cadastrar(fruta);
-
-            // Quando a API estiver no ar, troque a linha acima por este bloco
-            // (etapa 10 do GUIA.md):
-            //
-            //     if (!FrutaApi.Cadastrar(fruta))
-            //     {
-            //         MessageBox.Show("Não foi possível cadastrar a fruta. Tente novamente.",
-            //             "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //         return;
-            //     }
+            // Cadastrar() devolve false quando a API recusou a fruta ou não
+            // respondeu. Nesse caso avisamos e SAÍMOS com return, sem limpar
+            // os campos: o usuário não perde o que digitou e pode tentar de novo.
+            if (!FrutaApi.Cadastrar(fruta))
+            {
+                MessageBox.Show("Não foi possível cadastrar a fruta. Tente novamente.",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             // ---------- 4) AVISAR E IR PARA O ESTOQUE ----------
             MessageBox.Show(
@@ -211,7 +236,7 @@ namespace WindowsFormsAppFruteira
 
         /// <summary>
         /// Mostra uma mensagem de atenção e devolve o foco para o controle errado.
-        /// Criamos este método para não repetir o mesmo MessageBox sete vezes
+        /// Criamos este método para não repetir o mesmo MessageBox nove vezes
         /// na validação — é o princípio de não repetir código.
         /// </summary>
         private void Avisar(string mensagem, Control controle)

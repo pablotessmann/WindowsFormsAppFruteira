@@ -87,32 +87,41 @@ mantenha o programa vivo enquanto ela estiver aberta".
 
 ### Por que não usar variáveis soltas
 
-Sem uma classe, para guardar uma fruta você precisaria de cinco variáveis:
+Sem uma classe, para guardar uma fruta você precisaria de várias variáveis:
 
 ```csharp
+int id;
 string nome;
+decimal preco;
 int quantidade;
-string tipo;
-decimal valor;
-DateTime validade;
+int idCategoria;
+DateTime dataValidade;
+string hashImg;
 ```
 
-E para passar essa fruta para outro método, teria que passar cinco parâmetros.
-Com duas frutas, dez variáveis. Isso não escala.
+E para passar essa fruta para outro método, teria que passar sete parâmetros.
+Com duas frutas, catorze variáveis. Isso não escala.
 
 Uma **classe** é um molde que agrupa informações que andam juntas:
 
 ```csharp
 public class Fruta
 {
+    public int Id { get; set; }
     public string Nome { get; set; }
+    public decimal Preco { get; set; }
     public int Quantidade { get; set; }
-    public string Tipo { get; set; }
-    public decimal Valor { get; set; }
-    public DateTime Validade { get; set; }
-    public string CaminhoImagem { get; set; }
+    public int IdCategoria { get; set; }
+    public DateTime DataValidade { get; set; }
+    public string HashImg { get; set; }
 }
 ```
+
+As propriedades não foram inventadas por nós: elas **espelham a fruta que a API
+guarda**, cujos campos são `id`, `nome`, `preco`, `quantidade`, `id_categoria`,
+`data_validade` e `hash_img`. No arquivo de verdade cada propriedade ainda tem
+uma etiqueta `[DataMember(Name = "...")]` ligando-a ao campo da API — isso é
+explicado na etapa 10.
 
 Agora uma fruta é **um** objeto:
 
@@ -128,7 +137,7 @@ f.Nome = "Banana Prata";    // preenche uma informação
 | **classe** | O molde, a receita. `Fruta` é a classe. |
 | **objeto** / **instância** | Uma fruta concreta feita a partir do molde. |
 | **`new`** | O comando que cria o objeto na memória. |
-| **propriedade** | Uma informação guardada no objeto (`Nome`, `Valor`...). |
+| **propriedade** | Uma informação guardada no objeto (`Nome`, `Preco`...). |
 | **`{ get; set; }`** | Atalho que diz "esta propriedade pode ser lida (`get`) e escrita (`set`)". |
 | **`public`** | Qualquer parte do programa pode usar. |
 
@@ -137,11 +146,20 @@ f.Nome = "Banana Prata";    // preenche uma informação
 Isto **não** é detalhe:
 
 - `Quantidade` é `int` (número inteiro) porque não existe "meia caixa".
-- `Valor` é `decimal`, **não** `double`. `double` faz arredondamentos estranhos
+- `Preco` é `decimal`, **não** `double`. `double` faz arredondamentos estranhos
   com dinheiro (`0.1 + 0.2` pode dar `0.30000000000000004`). Para dinheiro,
   sempre `decimal`.
-- `Validade` é `DateTime`, **não** `string`. Sendo `DateTime` você pode comparar
-  datas (`if (fruta.Validade < DateTime.Today)`). Como texto, não conseguiria.
+- `DataValidade` é `DateTime`, **não** `string`. Sendo `DateTime` você pode
+  comparar datas (`if (fruta.DataValidade < DateTime.Today)`). Como texto, não
+  conseguiria.
+- `IdCategoria` é `int`: a fruta guarda o **número** da categoria, e não o texto
+  `"Tropical"`. Se amanhã a categoria mudar de nome, as frutas continuam
+  apontando para a categoria certa. Na tela mostramos o texto, e quem troca um
+  pelo outro é a `FrutaApi` (etapas 6 e 8).
+- `Id` é o número da própria fruta. Quem cria esse número é a API, na hora do
+  cadastro; uma fruta que ainda não foi enviada tem `Id` igual a `0`.
+- `HashImg` é `string`: é a imagem da fruta escrita como texto (Base64) — veja a
+  etapa 5.
 
 ### A lista de tipos
 
@@ -160,7 +178,8 @@ public static readonly string[] Tipos =
 
 Essa é a **lista reserva**. A lista de verdade vem da **API de categorias**
 (etapa 10); esta só entra em cena quando a API não responde, para as listas
-suspensas não ficarem vazias.
+suspensas não ficarem vazias. Ela tem só os textos, sem o número de cada
+categoria — por isso com ela dá para ver as telas, mas não para cadastrar.
 
 As telas não leem `Fruta.Tipos` direto. As duas chamam o mesmo método:
 
@@ -170,8 +189,8 @@ FrutaApi.ObterTipos()
 
 Esse método é a **fonte única da verdade**. A tela de Cadastro o usa para
 preencher o campo Tipo, e a tela de Estoque o usa para preencher o filtro
-Categoria. Assim é impossível cadastrar `"Acida"` (sem acento) e depois
-pesquisar `"Ácida"` (com acento) e não achar nada.
+Categoria. Assim as duas telas mostram sempre as mesmas categorias, escritas do
+mesmo jeito.
 
 ---
 
@@ -253,10 +272,10 @@ não existe) ou `banana`, e você teria que validar tudo isso na mão. O
 ele já entrega um `DateTime` pronto.
 
 **Tipo usa `ComboBox`, não `TextBox`.**
-O Tipo é o campo que o filtro "Categoria" do Estoque pesquisa. Se fosse texto
-livre, um erro de digitação no cadastro faria a fruta nunca aparecer na
-pesquisa. Com a lista fechada, só existem os valores que
-`FrutaApi.ObterTipos()` devolve.
+O Tipo é a **categoria** da fruta — a mesma que o filtro "Categoria" do Estoque
+pesquisa — e a API só aceita categorias que existem. Se fosse texto livre, o
+usuário poderia digitar uma categoria que não existe. Com a lista fechada, só
+existem os valores que `FrutaApi.ObterTipos()` devolve.
 
 A propriedade que fecha a lista é esta:
 
@@ -347,9 +366,9 @@ mesmo se der erro no meio. Leia como: "use isto aqui dentro e depois jogue fora"
 
 ### Por que guardamos o *caminho* e não a imagem
 
-O campo `CaminhoImagem` guarda só um texto, como `C:\Fotos\banana.png`.
-A imagem em si continua no disco. É mais leve, e é isso que a API vai precisar
-para ler o arquivo na hora de enviar.
+A tela guarda só um texto, como `C:\Fotos\banana.png`. A imagem em si continua
+no disco. É mais leve, e é desse caminho que vamos precisar para ler o arquivo
+na hora de enviar a fruta para a API.
 
 O campo fica declarado **fora** dos métodos:
 
@@ -360,6 +379,24 @@ private string caminhoImagem = string.Empty;
 Isso é importante: uma variável declarada **dentro** de um método morre quando o
 método termina. Precisamos que o caminho **sobreviva** entre o clique em
 "Escolher imagem" e o clique em "Cadastrar" — então ela tem que ficar fora.
+
+### Como a imagem chega na API: Base64
+
+A fruta é enviada para a API como um texto JSON (etapa 10), e JSON só carrega
+**texto**. Uma imagem não é texto: é uma sequência de bytes. **Base64** é uma
+forma de escrever esses bytes usando só letras e números. No clique em
+Cadastrar fazemos:
+
+```csharp
+string imagemBase64 = Convert.ToBase64String(File.ReadAllBytes(caminhoImagem));
+```
+
+- `File.ReadAllBytes` lê o arquivo inteiro do disco.
+- `Convert.ToBase64String` transforma os bytes em texto.
+
+Esse texto é o que vai na propriedade `HashImg` da fruta. No código de verdade
+essa linha fica dentro de um `try`/`catch`, porque o arquivo pode ter sido
+apagado ou movido depois de escolhido.
 
 ### O detalhe do arquivo travado
 
@@ -496,9 +533,26 @@ if (cmbTipo.SelectedIndex < 0)
 `SelectedIndex` é a posição escolhida, começando em zero. Vale **`-1`** quando
 nada foi selecionado.
 
+Escolher não basta: a API guarda o **número** da categoria, e a lista suspensa
+só tem o texto. Então trocamos um pelo outro:
+
+```csharp
+int idCategoria = FrutaApi.ObterIdCategoria(cmbTipo.SelectedItem.ToString());
+if (idCategoria == 0)
+{
+    Avisar("Não foi possível obter as categorias da API. ...", cmbTipo);
+    return;
+}
+```
+
+`ObterIdCategoria` devolve `0` quando o texto não é de nenhuma categoria da API.
+Isso acontece quando a API estava desligada e a lista suspensa foi preenchida
+com a lista reserva, que não tem números. Sem o número não há o que enviar,
+então avisamos e saímos.
+
 ### Não repetir código: o método `Avisar`
 
-O `MessageBox` de aviso apareceria **sete vezes** igual. Em vez disso,
+O `MessageBox` de aviso apareceria **nove vezes** igual. Em vez disso,
 escrevemos o trecho uma vez:
 
 ```csharp
@@ -524,17 +578,36 @@ Passou por toda a validação? Agora sim:
 Fruta fruta = new Fruta
 {
     Nome = txtNome.Text.Trim(),
+    Preco = valor,
     Quantidade = quantidade,
-    Tipo = cmbTipo.SelectedItem.ToString(),
-    Valor = valor,
-    Validade = dtpValidade.Value,
-    CaminhoImagem = caminhoImagem
+    IdCategoria = idCategoria,
+    DataValidade = dtpValidade.Value.Date,
+    HashImg = imagemBase64
 };
 ```
 
 Essa sintaxe com `{ }` é o **inicializador de objeto**: é um atalho para criar o
 objeto e preencher as propriedades em seguida. `Trim()` remove espaços sobrando
-no começo e no fim.
+no começo e no fim. `.Date` joga fora a hora e fica só com o dia. O
+`imagemBase64` é a imagem transformada em texto (etapa 5). O `Id` não é
+preenchido: quem cria esse número é a API.
+
+### Enviando e conferindo a resposta
+
+```csharp
+if (!FrutaApi.Cadastrar(fruta))
+{
+    MessageBox.Show("Não foi possível cadastrar a fruta. Tente novamente.",
+        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    return;
+}
+```
+
+`Cadastrar` devolve `true` quando a API confirmou e `false` quando ela recusou
+ou não respondeu. O `!` significa "não": **se não cadastrou**, avisamos e saímos
+com `return` — sem limpar os campos, para o usuário não perder o que digitou e
+poder tentar de novo. Só depois desse `if` vem a mensagem de sucesso e a troca
+de tela.
 
 ---
 
@@ -665,9 +738,9 @@ private void PreencherLista(List<Fruta> frutas)
     {
         ListViewItem linha = new ListViewItem(fruta.Nome);   // 1ª coluna
         linha.SubItems.Add(fruta.Quantidade.ToString());     // 2ª coluna
-        linha.SubItems.Add(fruta.Validade.ToShortDateString()); // 3ª
-        linha.SubItems.Add(fruta.Valor.ToString("C"));       // 4ª
-        linha.SubItems.Add(fruta.Tipo);                      // 5ª
+        linha.SubItems.Add(fruta.DataValidade.ToShortDateString()); // 3ª
+        linha.SubItems.Add(fruta.Preco.ToString("C"));       // 4ª
+        linha.SubItems.Add(FrutaApi.ObterDescricaoCategoria(fruta.IdCategoria)); // 5ª
         lstEstoque.Items.Add(linha);
     }
 }
@@ -684,6 +757,11 @@ private void PreencherLista(List<Fruta> frutas)
    mostra `07/10/2026` em vez da data com hora; `ToString("C")` é o formato de
    moeda e mostra `R$ 7,49`.
 
+A quinta coluna merece atenção: a fruta guarda só o **número** da categoria
+(`IdCategoria`), e mostrar `2` na tela não diria nada ao usuário.
+`FrutaApi.ObterDescricaoCategoria` troca o número pelo texto (`"Tropical"`). É o
+caminho contrário do `ObterIdCategoria` usado no Cadastro.
+
 ### `foreach`
 
 ```csharp
@@ -696,8 +774,8 @@ lista `frutas`, faça...". É a forma mais simples de percorrer uma lista.
 ### Por que `PreencherLista` é um método separado
 
 Ele não sabe de onde as frutas vieram — só sabe desenhá-las. Isso se chama
-**separar responsabilidades**. Quando a API entrar no lugar da lista vazia,
-este método **não muda nada**.
+**separar responsabilidades**. Se amanhã as frutas vierem de outro lugar, este
+método **não muda nada**.
 
 ---
 
@@ -712,21 +790,36 @@ cmbCategoria.SelectedIndex = 0;                        // começa em "(Todas)"
 ```
 
 Repare de novo: **`FrutaApi.ObterTipos()`**, o mesmo método da tela de Cadastro.
-É isso que garante que o que foi cadastrado como `"Ácida"` seja encontrado ao
-pesquisar `"Ácida"`.
+É isso que garante que a categoria escolhida no cadastro seja a mesma que
+aparece aqui para pesquisar.
 
 ### A opção "(Todas)"
 
+A API de frutas filtra pelo **número** da categoria, e não pelo texto. E
 `"(Todas)"` não é uma categoria de verdade — é a opção "não quero filtrar por
-este campo". Então, antes de pesquisar, traduzimos para texto vazio:
+este campo". Combinamos então que o número **zero** significa "sem filtro":
 
 ```csharp
+int idCategoria = 0;                       // 0 = não filtre por categoria
+
 string categoria = cmbCategoria.SelectedItem.ToString();
-if (categoria == TodasAsCategorias)
+if (categoria != TodasAsCategorias)
 {
-    categoria = string.Empty;   // para a API, vazio = não filtre
+    idCategoria = FrutaApi.ObterIdCategoria(categoria);   // texto -> número
 }
+
+string nome = txtNome.Text.Trim();
+
+List<Fruta> encontradas = FrutaApi.Pesquisar(idCategoria, nome);
 ```
+
+### Pesquisar sem filtro nenhum
+
+Com `"(Todas)"` e o Nome em branco não há filtro nenhum — e a pesquisa
+**acontece do mesmo jeito**, trazendo **todas** as frutas. Não existe um `if`
+impedindo a pesquisa "vazia": quem decide o que mandar para a API é o
+`FrutaApi.Pesquisar` (etapa 10), que só coloca no endereço os filtros que foram
+preenchidos.
 
 O texto `"(Todas)"` está numa **constante**:
 
@@ -744,12 +837,11 @@ e o compilador não avisaria nada.
 ## Etapa 10 — Onde a API entra
 
 Neste projeto, **os dados não ficam no programa**: quem guarda tudo é uma API
-(um servidor que responde pela internet). São duas partes:
+(um servidor que responde pela rede). Ela é outro projeto, que roda separado
+deste, e tem duas partes:
 
-- A API de **categorias** já existe. Ela é outro projeto, que roda separado
-  deste, e a chamada a ela **está ligada de verdade**.
-- A API de **frutas** (cadastrar e pesquisar) **ainda não existe**, então essas
-  duas chamadas estão **comentadas**.
+- `/Categoria` — a lista de categorias de fruta.
+- `/Fruta` — pesquisar e cadastrar frutas.
 
 Tudo isso fica no arquivo `FrutaApi.cs`.
 
@@ -760,13 +852,13 @@ As telas nunca falam HTTP direto. Elas chamam:
 ```csharp
 FrutaApi.ObterTipos();
 FrutaApi.Cadastrar(fruta);
-FrutaApi.Pesquisar(categoria, nome);
+FrutaApi.Pesquisar(idCategoria, nome);
 ```
 
 Se amanhã o endereço ou o formato da API mudar, **só o `FrutaApi.cs` muda**. As
 telas continuam iguais. Isso se chama **centralizar a dependência**.
 
-### A chamada que já funciona: categorias
+### A primeira chamada: categorias
 
 ```
 GET https://localhost:7069/Categoria
@@ -849,7 +941,9 @@ As telas não chamam `ListarCategorias()` direto. Elas chamam
 `FrutaApi.ObterTipos()`, que faz três coisas:
 
 1. Pega só o texto (`Descricao`) de cada categoria, porque é isso que a lista
-   suspensa mostra.
+   suspensa mostra. A categoria completa (com o `Id`) também fica guardada: é
+   com ela que `ObterIdCategoria` e `ObterDescricaoCategoria` trocam texto por
+   número e número por texto.
 2. Se não veio nenhuma categoria (API fora do ar), devolve a **lista reserva**
    `Fruta.Tipos`. O programa continua funcionando.
 3. **Guarda o resultado** numa variável e, da segunda vez em diante, devolve o
@@ -860,102 +954,217 @@ As telas não chamam `ListarCategorias()` direto. Elas chamam
 > está rodando? (2) abra `https://localhost:7069/Categoria` no navegador — se
 > ele reclamar do certificado, rode `dotnet dev-certs https --trust` no
 > projeto da API. Enquanto o Windows não confia no certificado, a chamada falha
-> e o programa usa a lista reserva.
+> e o programa usa a lista reserva. Vale o mesmo para as frutas: sem a API, a
+> pesquisa volta vazia e o cadastro avisa que não conseguiu gravar.
 
-### As duas chamadas esperadas (ainda sem API)
-
-**Cadastrar uma fruta:**
-
-```
-POST https://localhost:5001/api/frutas
-Content-Type: multipart/form-data
-
-nome       = "Banana Prata"
-quantidade = 120
-tipo       = "Tropical"
-valor      = 7.49
-validade   = "2026-12-31"          (formato yyyy-MM-dd)
-imagem     = <bytes do arquivo>
-
-Resposta esperada: 201 Created
-```
-
-Usamos `multipart/form-data` (e não JSON) porque estamos enviando um **arquivo**
-junto com os campos de texto.
-
-**Pesquisar o estoque:**
+### Pesquisar o estoque
 
 ```
-GET https://localhost:5001/api/frutas?categoria=Tropical&nome=banana
+GET https://localhost:7069/Fruta                             (todas as frutas)
+GET https://localhost:7069/Fruta?id_categoria=2
+GET https://localhost:7069/Fruta?nome=banana
+GET https://localhost:7069/Fruta?id_categoria=2&nome=banana
 
 Resposta esperada: 200 OK
 [
   {
+    "id": 1,
     "nome": "Banana Prata",
+    "preco": 7.49,
     "quantidade": 120,
-    "tipo": "Tropical",
-    "valor": 7.49,
-    "validade": "2026-12-31",
-    "caminhoImagem": "banana.png"
+    "id_categoria": 2,
+    "data_validade": "2026-12-31T00:00:00",
+    "hash_img": "iVBORw0KGgo..."
   }
 ]
 ```
 
-Os dois parâmetros são opcionais: enviar vazio significa "não filtre por este
-campo".
-
-### Enquanto a API de frutas não existe
-
-`Cadastrar` e `Pesquisar` devolvem um valor "vazio", propositalmente:
+O endereço fica na constante `FrutaApi.UrlFrutas`. Os filtros vão depois de um
+`?`, separados por `&`, e os dois são **opcionais**: só entra no endereço o
+filtro que o usuário preencheu. Sem filtro nenhum o endereço fica só
+`.../Fruta`, e a API devolve tudo.
 
 ```csharp
-public static bool Cadastrar(Fruta fruta)
+public static List<Fruta> Pesquisar(int idCategoria, string nome)
 {
-    // ...código comentado...
-    return false;      // nada foi gravado de verdade
-}
+    List<string> filtros = new List<string>();
 
-public static List<Fruta> Pesquisar(string categoria, string nome)
-{
-    // ...código comentado...
-    return new List<Fruta>();     // lista VAZIA
+    if (idCategoria > 0)
+    {
+        filtros.Add("id_categoria=" + idCategoria);
+    }
+
+    if (!string.IsNullOrWhiteSpace(nome))
+    {
+        filtros.Add("nome=" + Uri.EscapeDataString(nome));
+    }
+
+    string url = UrlFrutas;
+
+    if (filtros.Count > 0)
+    {
+        url = url + "?" + string.Join("&", filtros);
+    }
+
+    // ...daqui em diante é igual a ListarCategorias(): GetAsync(url),
+    // IsSuccessStatusCode, DataContractJsonSerializer(typeof(List<Fruta>))
+    // e try/catch devolvendo lista vazia.
 }
 ```
+
+- Cada filtro preenchido entra numa lista; `string.Join("&", filtros)` junta os
+  itens colocando `&` **entre** eles. Com um filtro só, não sobra `&` nenhum.
+- `Uri.EscapeDataString` troca espaços e acentos por código. Sem isso, um nome
+  como `banana prata` quebraria o endereço.
 
 > **Uma lista vazia não é a mesma coisa que `null`.** Uma lista vazia é uma
 > lista que existe e tem zero itens: o `foreach` passa por ela sem fazer nada.
 > `null` é "não existe lista nenhuma" — e tentar percorrer `null` quebra o
-> programa. Por isso devolvemos lista vazia, e nunca `null`.
+> programa. Por isso `Pesquisar` devolve lista vazia, e nunca `null`, tanto
+> quando não há fruta nenhuma quanto quando a API não respondeu.
 
-**Consequência prática:** ao clicar em Pesquisar, você verá "Nenhuma fruta
-encontrada". Isso está **certo** — não é bug.
+**Consequência prática:** com a API desligada, clicar em Pesquisar mostra
+"Nenhuma fruta encontrada". Para ver o desenho da tabela mesmo assim, abra
+`EstoqueForm.cs`, comente a linha
+`List<Fruta> encontradas = FrutaApi.Pesquisar(idCategoria, nome);` e descomente
+o bloco de frutas de exemplo logo abaixo dela. Depois desfaça.
 
-Para ver o desenho da tabela funcionando, abra `EstoqueForm.cs`, comente a linha
-`List<Fruta> encontradas = FrutaApi.Pesquisar(categoria, nome);` e descomente o
-bloco de frutas de exemplo logo abaixo dela. Depois desfaça.
+### Como o JSON vira `Fruta`
 
-### Como ativar a API de frutas de verdade
+É o mesmo mecanismo da classe `Categoria`: cada propriedade tem a etiqueta com o
+nome do campo no JSON.
 
-1. **Trocar o endereço.** Em `FrutaApi.cs`, ajuste `BaseUrl`.
-2. **Descomentar** o corpo de `Cadastrar` e de `Pesquisar`.
-3. **Ler o JSON das frutas.** O código comentado de `Pesquisar` usa
-   `JsonConvert`, que o projeto não tem. Escolha um caminho:
-   - **`DataContractJsonSerializer`** — é o que `ListarCategorias()` já usa,
-     então não precisa instalar nada. Coloque `[DataContract]` e `[DataMember]`
-     na classe `Fruta`, do mesmo jeito que foi feito em `Categoria`, e troque a
-     linha do `JsonConvert` pelo mesmo código de leitura.
-   - **`Newtonsoft.Json`** — instale pelo NuGet (*Ferramentas → Gerenciador de
-     Pacotes NuGet*). É a mais usada e a mais curta de escrever:
-     `JsonConvert.DeserializeObject<List<Fruta>>(json)`.
+```csharp
+[DataContract]
+public class Fruta
+{
+    [DataMember(Name = "id", EmitDefaultValue = false)]
+    public int Id { get; set; }
 
-   `System.Net.Http` (o `HttpClient`) **já está referenciado** no projeto.
-4. **Tratar o retorno.** Em `CadastroForm.cs`, troque a linha
-   `FrutaApi.Cadastrar(fruta);` pelo bloco `if` que já está comentado logo
-   abaixo dela, para avisar o usuário quando a API recusar o cadastro.
-5. **Estudar `async`/`await`.** O código (o comentado e o das categorias) usa
-   `.Result`, que é o jeito mais simples de esperar uma resposta — mas ele
-   **congela a tela** enquanto a API não responde. O jeito correto em programas reais é `async`/`await`. Fica
-   como assunto para a próxima etapa do curso.
+    [DataMember(Name = "nome")]
+    public string Nome { get; set; }
+
+    [DataMember(Name = "preco")]
+    public decimal Preco { get; set; }
+
+    [DataMember(Name = "quantidade")]
+    public int Quantidade { get; set; }
+
+    [DataMember(Name = "id_categoria")]
+    public int IdCategoria { get; set; }
+
+    public DateTime DataValidade { get; set; }
+
+    [DataMember(Name = "hash_img")]
+    public string HashImg { get; set; }
+}
+```
+
+Aqui o `Name` é ainda mais necessário do que em `Categoria`: no JSON o campo se
+chama `id_categoria` (com sublinhado), e em C# o costume é `IdCategoria`.
+
+Dois detalhes:
+
+- **`EmitDefaultValue = false` no `Id`.** Faz o `Id` **não** ser enviado quando
+  vale `0`. Uma fruta nova ainda não tem número — quem cria é a API —, então o
+  cadastro não manda um `"id": 0`.
+- **`DataValidade` não tem etiqueta.** No JSON a data vem como **texto**
+  (`"2026-12-31T00:00:00"`), e o leitor de JSON do .NET não sabe transformar
+  esse texto em `DateTime` sozinho. Por isso existe uma segunda propriedade,
+  `private`, que serve de ponte:
+
+```csharp
+[DataMember(Name = "data_validade")]
+private string DataValidadeTexto
+{
+    get
+    {
+        return DataValidade.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
+    }
+    set
+    {
+        DateTime data;
+        DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out data);
+        DataValidade = data;
+    }
+}
+```
+
+  O `get` roda ao **enviar** (data → texto) e o `set` ao **receber** (texto →
+  data). Repare no `TryParse`, o mesmo da etapa 6: se a data vier num formato
+  inesperado, ele só devolve `false` em vez de quebrar a leitura da lista
+  inteira. É `private` porque as telas não precisam dela — elas usam
+  `DataValidade`.
+
+### Cadastrar uma fruta
+
+```
+POST https://localhost:7069/Fruta
+Content-Type: application/json
+
+{
+  "nome": "Banana Prata",
+  "preco": 7.49,
+  "quantidade": 120,
+  "id_categoria": 2,
+  "data_validade": "2026-12-31T00:00:00",
+  "hash_img": "iVBORw0KGgo..."
+}
+
+Resposta esperada: um código de sucesso (200 OK ou 201 Created)
+```
+
+O endereço é o mesmo da pesquisa. O que muda é o **verbo**: `GET` pede dados,
+`POST` envia dados novos.
+
+```csharp
+public static bool Cadastrar(Fruta fruta)
+{
+    try
+    {
+        string json;
+
+        using (MemoryStream memoria = new MemoryStream())
+        {
+            DataContractJsonSerializer escritor =
+                new DataContractJsonSerializer(typeof(Fruta));
+
+            escritor.WriteObject(memoria, fruta);
+
+            json = Encoding.UTF8.GetString(memoria.ToArray());
+        }
+
+        using (HttpClient cliente = new HttpClient())
+        using (StringContent corpo = new StringContent(json, Encoding.UTF8, "application/json"))
+        {
+            cliente.Timeout = TimeSpan.FromSeconds(5);
+
+            HttpResponseMessage resposta = cliente.PostAsync(UrlFrutas, corpo).Result;
+
+            return resposta.IsSuccessStatusCode;
+        }
+    }
+    catch (Exception)
+    {
+        return false;
+    }
+}
+```
+
+- `WriteObject` é o caminho inverso do `ReadObject`: transforma o **objeto** em
+  **JSON**.
+- `StringContent` leva o texto, e o `"application/json"` avisa a API de que
+  aquele texto é um JSON.
+- `PostAsync` faz o `POST`.
+- O método devolve `true` só quando a API confirmou. Com a API desligada o
+  `catch` devolve `false`, e a tela de Cadastro avisa o usuário (etapa 6).
+
+### `.Result` e a tela congelada
+
+As três chamadas usam `.Result`, que é o jeito mais simples de esperar uma
+resposta — mas ele **congela a tela** enquanto a API não responde. O jeito
+correto em programas reais é `async`/`await`. Fica como assunto para a próxima
+etapa do curso.
 
 ---
 
@@ -995,15 +1204,21 @@ Confira um por um:
 
 1. A tela abre com a lista de tipos preenchida e a prévia vazia. Com a API de
    categorias rodando, aparecem as categorias dela; com a API desligada,
-   aparecem os 5 tipos da lista reserva.
+   aparecem os 5 tipos da lista reserva. **Os itens 6 e 8 precisam da API
+   rodando.**
 2. Clicar em **Cadastrar** com tudo em branco → aviso, e **não** troca de tela.
 3. Digitar `abc` em Quantidade → aviso específico daquele campo.
 4. Digitar `abc` em Valor → aviso específico daquele campo.
 5. **Escolher imagem** → a foto aparece inteira, sem esticar.
-6. Preencher tudo certo → mensagem de sucesso → o Estoque abre.
+6. Preencher tudo certo → mensagem de sucesso → o Estoque abre. Com a API
+   desligada → aviso de erro, **não** troca de tela e os campos continuam
+   preenchidos.
 7. No Estoque, as 5 colunas aparecem na ordem Fruta, Quantidade, Validade,
    Valor, Tipo.
-8. **Pesquisar** → "Nenhuma fruta encontrada" (correto, sem API).
+8. **Pesquisar** com "(Todas)" e o Nome em branco → aparecem **todas** as
+   frutas, incluindo a que você acabou de cadastrar. Escolher uma categoria ou
+   digitar parte do nome → só as frutas que combinam. Com a API desligada →
+   "Nenhuma fruta encontrada".
 9. **Voltar** → o Cadastro reaparece. Feche o Cadastro e confirme no
    Gerenciador de Tarefas que o processo terminou.
 
@@ -1018,7 +1233,7 @@ Em ordem crescente de dificuldade.
 2. **Limpar filtros.** Adicione um botão que volta a Categoria para "(Todas)",
    apaga o Nome e limpa a lista.
 3. **Destacar vencidas.** Pinte de vermelho as linhas cuja validade já passou.
-   *Dica: `linha.ForeColor = Color.Red;` e compare `fruta.Validade` com
+   *Dica: `linha.ForeColor = Color.Red;` e compare `fruta.DataValidade` com
    `DateTime.Today`.*
 4. **Enter pesquisa.** Fazer a tecla Enter no campo Nome disparar a pesquisa.
    *Dica: propriedade `AcceptButton` do formulário.*
@@ -1028,7 +1243,8 @@ Em ordem crescente de dificuldade.
    por ela. *Dica: evento `ColumnClick` e a propriedade `ListViewItemSorter`.*
 7. **Excluir.** Botão que remove a fruta selecionada, com pergunta de
    confirmação. *Dica: `MessageBox.Show(..., MessageBoxButtons.YesNo)` e uma
-   nova chamada `DELETE /api/frutas/{id}` em `FrutaApi.cs`. Note que para isso
-   a classe `Fruta` vai precisar de uma propriedade `Id`.*
+   nova chamada `DELETE /Fruta/{id}` em `FrutaApi.cs`. O `{id}` é a propriedade
+   `Id` da fruta — guarde-a em `linha.Tag` ao preencher a lista.*
 8. **Tela de detalhes.** Duplo clique numa linha abre uma terceira tela
-   mostrando a fruta com a imagem grande.
+   mostrando a fruta com a imagem grande. *Dica: `Convert.FromBase64String`
+   transforma o `HashImg` de volta em bytes.*
